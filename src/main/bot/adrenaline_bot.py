@@ -6,6 +6,9 @@ import time as t
 MAX_INT = 2147483647
 VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
+LOPATA_ID = '448223022'
+DK_ID = ''
+POLAND_ID = ''
 
 
 def format_input(answer):
@@ -134,6 +137,9 @@ class Adrenaline_bot:
             print('Нас пока что нет в общежитии, но мы обязательно свяжемся с вами!')
             ''' И сюда нужно колл о заказе прикрепить '''
 
+    def new_message(self, user_id, first_name, flags, time, text, media):
+        pass
+
     def start_bot(self):
         # авторизация сообщества
         self.login_as_group()
@@ -149,6 +155,7 @@ class Adrenaline_bot:
             response = self.get_response()
             updates = response['updates']
             if updates:
+                print(updates)
                 for update in updates:
                     action_code = update[0]
                     # набор текста пользователем
@@ -170,6 +177,7 @@ class Adrenaline_bot:
                         media = update[6]
                         # если сообщение от пользователя
                         if not flags & 2:
+                            self.new_message(user_id, first_name, flags, time, text, media)
                             self.write_msg(user_id, '%Ответ пользователю%')
                             if text:
                                 print(first_name + ' ' + second_name + ': "' + text + '" [' + t.ctime(time) + ']')
@@ -178,7 +186,3 @@ class Adrenaline_bot:
                                 if 'attach' + str(i) + '_type' in media.keys():
                                     print('    ' + media['attach' + str(i) + '_type'] + ': ' + media['attach' + str(i)])
             self.long_poll_ts = response['ts']
-
-
-bot = Adrenaline_bot()
-bot.start_bot()

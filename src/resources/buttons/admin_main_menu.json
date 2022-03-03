@@ -10,8 +10,9 @@
           "payload": "{\"button\": \"1\"}"
         },
         "color": "secondary"
-      },
-
+      }
+    ],
+    [
       {
         "action":
         {
@@ -21,7 +22,6 @@
         },
         "color": "secondary"
       },
-
       {
         "action":
         {

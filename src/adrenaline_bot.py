@@ -29,6 +29,10 @@ class Adrenaline_bot:
         # для авторизации через пользователя
         self.auth_code = None
         self.remember_code = None
+        # настройки администратора
+        self.is_lopata_home = False
+        self.is_dk_home = False
+        self.is_poland_home = False
 
     # слушатель кода двухфакторки
     def auth_handler(self):
@@ -109,6 +113,26 @@ class Adrenaline_bot:
             key=self.long_poll_key,
             ts=self.long_poll_ts)).json()
         return data
+
+    def change_lopata_status(self):
+        self.is_lopata_home = not self.is_lopata_home
+
+    def change_dk_status(self):
+        self.is_dk_home = not self.is_dk_home
+
+    def change_poland_status(self):
+        self.is_poland_home = not self.is_poland_home
+
+    def find_seller(self):
+        if self.is_poland_home:
+            pass
+        elif self.is_dk_home:
+            pass
+        elif self.is_lopata_home:
+            pass
+        else:
+            print('Нас пока что нет в общежитии, но мы обязательно свяжемся с вами!')
+            ''' И сюда нужно колл о заказе прикрепить '''
 
     def start_bot(self):
         # авторизация сообщества

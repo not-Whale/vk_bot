@@ -140,7 +140,7 @@ class Adrenaline_bot:
     def new_admin_message(self, user_id, time, text):
         current_user = None
         for i in range(len(self.admins)):
-            if user_id == self.admins[i].get_user_id():
+            if str(user_id) == self.admins[i].get_user_id():
                 current_user = self.admins[i]
                 break
         if current_user.get_menu_mode() == 'main':
@@ -270,6 +270,9 @@ class Adrenaline_bot:
 
         # установка параметров LongPoll сервера
         self.set_long_poll_server_params()
+
+        # заполнения списка админов
+        self.fill_admin_list()
 
         # цикл запросов к LongPoll серверу
         while True:

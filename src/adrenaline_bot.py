@@ -30,6 +30,7 @@ class Adrenaline_bot:
         self.auth_code = None
         self.remember_code = None
 
+    # слушатель кода двухфакторки
     def auth_handler(self):
         self.auth_code = input('Введите код аутентификации...')
         while True:
@@ -42,6 +43,7 @@ class Adrenaline_bot:
                 break
             print('Неверный формат ввода!')
 
+    # авторизация пользователя
     def login_as_user(self):
         login, password = 'your_login', 'your_password'
         self.vk_session = vk_api.VkApi(
@@ -56,6 +58,7 @@ class Adrenaline_bot:
             print_error(error_message)
             self.vk_session = None
 
+    # авторизация пользователя с двухфакторкой
     def login_as_user_two_factor(self):
         login, password = 'your_login', 'your_password'
         self.vk_session = vk_api.VkApi(
@@ -69,6 +72,7 @@ class Adrenaline_bot:
             print_error(error_message)
             self.vk_session = None
 
+    # авторизация как сообщество
     def login_as_group(self):
         try:
             self.vk_session = vk_api.VkApi(token=VK_TOKEN)
@@ -80,14 +84,17 @@ class Adrenaline_bot:
             print_error(error_message)
             self.vk_session = None
 
+    # написать в чатик
     def write_msg(self, user_id, message):
         values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT)}
         self.vk_session.method('messages.send', values=values)
 
+    # получить информацию об имени пользователя
     def get_username(self, user_id):
         response = self.vk_session.method('users.get', {'user_ids': user_id})[0]
         return [response['first_name'], response['last_name']]
 
+    # инициализировать LongPoll
     def set_long_poll_server_params(self):
         values = {'lp_version': 3}
         long_poll = self.vk_session.method('messages.getLongPollServer', values=values)
@@ -95,6 +102,7 @@ class Adrenaline_bot:
         self.long_poll_key = long_poll['key']
         self.long_poll_ts = long_poll['ts']
 
+    # get запрос к LongPoll
     def get_response(self):
         data = requests.get('https://{server}?act=a_check&key={key}&ts={ts}&wait=25&mode=2&version=2'.format(
             server=self.long_poll_server,

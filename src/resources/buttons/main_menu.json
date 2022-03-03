@@ -6,7 +6,7 @@
         "action":
         {
           "type": "text",
-          "label": "gfdgdfsgfd",
+          "label": "NEW TEXT",
           "payload": "{\"button\": \"1\"}"
         },
         "color": "positive"

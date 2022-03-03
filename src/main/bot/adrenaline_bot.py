@@ -1,3 +1,4 @@
+import json
 from random import randint
 import vk_api
 import requests
@@ -12,9 +13,10 @@ DK_ID = ''
 POLAND_ID = ''
 ADMIN_LIST = [LOPATA_ID, DK_ID, POLAND_ID]
 
-# KEYBOARD_TEST = {"one_time": False, "buttons": [[{"action": {"type": "text", "label": "Тестовая кнопка", "payload": "{\"button\": \"1\"}"}, "color": "positive"}]]}
-# KEYBOARD_TEST = json.dumps(KEYBOARD_TEST, ensure_ascii=False).encode('utf-8')
-# KEYBOARD_TEST = str(KEYBOARD_TEST.decode('utf-8'))
+with open('../resources/buttons/main_menu.json', 'r', encoding='utf-8-sig') as test_key:
+    KEYBOARD_TEST = json.load(test_key)
+    KEYBOARD_TEST = json.dumps(KEYBOARD_TEST, ensure_ascii=False).encode('utf-8-sig')
+    KEYBOARD_TEST = str(KEYBOARD_TEST.decode('utf-8-sig'))
 
 
 def format_input(answer):
@@ -25,6 +27,12 @@ def print_error(error_message):
     print('\033[31mError! Message:')
     print(error_message)
     print('\033[0m')
+
+
+def read_json(file_name):
+    with open('../resources/buttons/' + file_name + '.json', 'r', encoding='utf-8-sig') as json_keyboard:
+        keyboard = json.dumps(json.load(json_keyboard), ensure_ascii=False).encode('utf-8-sig')
+    return str(keyboard.decode('utf-8-sig'))
 
 
 class Adrenaline_bot:
@@ -97,8 +105,8 @@ class Adrenaline_bot:
             self.vk_session = None
 
     # написать в чатик
-    def send_message(self, user_id, message, keyboard=None):
-        if keyboard is None:
+    def send_message(self, user_id, message, keyboard=''):
+        if keyboard == '':
             values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT)}
         else:
             values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT), 'keyboard': keyboard}
@@ -146,7 +154,7 @@ class Adrenaline_bot:
     #         ''' И сюда нужно колл о заказе прикрепить '''
 
     def new_message(self, user_id, first_name, flags, time, text, media):
-        if user_id in ADMIN_LIST:
+        if str(user_id) in ADMIN_LIST:
             self.new_admin_message(user_id, flags, time, text, media)
         else:
             self.new_client_message(user_id, first_name, flags, time, text, media)
@@ -195,7 +203,6 @@ class Adrenaline_bot:
                         # если сообщение от пользователя
                         if not flags & 2:
                             self.new_message(user_id, first_name, flags, time, text, media)
-                            self.send_message(user_id, 'Сообщение принято ботом!')
                             if text:
                                 print(first_name + ' ' + second_name + ': "' + text + '" [' + t.ctime(time) + ']')
                             # обработка вложений (прикреплять больше 10 запрещено самим вк)

@@ -1,7 +1,7 @@
 class Client:
-    def __init__(self, client_id, mode='start'):
+    def __init__(self, client_id, menu_mode='start'):
         self.user_id = client_id
-        self.menu_mode = mode
+        self.menu_mode = menu_mode
         self.deals = 0
 
     def get_user_id(self):

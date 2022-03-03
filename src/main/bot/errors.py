@@ -1,0 +1,2 @@
+class AmountError(Exception):
+    pass

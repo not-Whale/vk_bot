@@ -1,0 +1,56 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Мои продажи",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "secondary"
+      },
+
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Новый завоз",
+          "payload": "{\"button\": \"2\"}"
+        },
+        "color": "secondary"
+      },
+
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Новая сделка",
+          "payload": "{\"button\": \"3\"}"
+        },
+        "color": "secondary"
+      }
+    ],
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "На связи",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "positive"
+      },
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Занят",
+          "payload": "{\"button\": \"2\"}"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

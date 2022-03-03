@@ -1,10 +1,11 @@
 class Admin:
-    def __init__(self, user_id, pay_url, room_number):
+    def __init__(self, user_id, pay_url, room_number, menu_mode='start'):
         self.user_id = user_id
         self.room_number = room_number
         self.pay_url = pay_url
-        self.menu_mode = 'start'
-        self.is_home = False
+        self.menu_mode = menu_mode
+        self.energy_amount = 0
+        self.is_online = False
         self.deals = []
 
     def get_user_id(self):
@@ -17,7 +18,7 @@ class Admin:
         return self.pay_url
 
     def get_status(self):
-        return self.is_home
+        return self.is_online
 
     def get_deals_list(self):
         return self.deals
@@ -25,11 +26,20 @@ class Admin:
     def get_menu_mode(self):
         return self.menu_mode
 
-    def change_status(self):
-        self.is_home = not self.is_home
+    def get_energy_amount(self):
+        return self.energy_amount
+
+    def set_online(self):
+        self.is_online = True
+
+    def set_offline(self):
+        self.is_online = False
 
     def set_menu_mode(self, menu_mode):
         self.menu_mode = menu_mode
+
+    def set_energy_amount(self, amount):
+        self.energy_amount = amount
 
     def new_deal(self, time):
         self.deals.append(time)

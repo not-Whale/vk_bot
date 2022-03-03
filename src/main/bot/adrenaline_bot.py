@@ -1,22 +1,19 @@
-import json
-from random import randint
 import vk_api
 import requests
 import time as t
+from random import randint
+import src.main.bot.errors as e
+import src.main.bot.read_json as rj
 
 MAX_INT = 2147483647
 VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
 
-LOPATA_ID = '448223022'
-DK_ID = ''
-POLAND_ID = ''
-ADMIN_LIST = [LOPATA_ID, DK_ID, POLAND_ID]
+ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_menu')
+ADMIN_BACK_KEYBOARD = rj.read_json('admin_back')
+KEYBOARD_TEST = rj.read_json('main_menu')
 
-with open('../resources/buttons/main_menu.json', 'r', encoding='utf-8-sig') as test_key:
-    KEYBOARD_TEST = json.load(test_key)
-    KEYBOARD_TEST = json.dumps(KEYBOARD_TEST, ensure_ascii=False).encode('utf-8-sig')
-    KEYBOARD_TEST = str(KEYBOARD_TEST.decode('utf-8-sig'))
+ADMIN_LIST = []
 
 
 def format_input(answer):
@@ -27,12 +24,6 @@ def print_error(error_message):
     print('\033[31mError! Message:')
     print(error_message)
     print('\033[0m')
-
-
-def read_json(file_name):
-    with open('../resources/buttons/' + file_name + '.json', 'r', encoding='utf-8-sig') as json_keyboard:
-        keyboard = json.dumps(json.load(json_keyboard), ensure_ascii=False).encode('utf-8-sig')
-    return str(keyboard.decode('utf-8-sig'))
 
 
 class Adrenaline_bot:
@@ -133,37 +124,142 @@ class Adrenaline_bot:
             ts=self.long_poll_ts)).json()
         return data
 
-    # def change_lopata_status(self):
-    #     self.is_lopata_home = not self.is_lopata_home
-    #
-    # def change_dk_status(self):
-    #     self.is_dk_home = not self.is_dk_home
-    #
-    # def change_poland_status(self):
-    #     self.is_poland_home = not self.is_poland_home
-    #
-    # def find_seller(self):
-    #     if self.is_poland_home:
-    #         pass
-    #     elif self.is_dk_home:
-    #         pass
-    #     elif self.is_lopata_home:
-    #         pass
-    #     else:
-    #         print('Нас пока что нет в общежитии, но мы обязательно свяжемся с вами!')
-    #         ''' И сюда нужно колл о заказе прикрепить '''
+    # заполнение списка id админов
+    def fill_admin_list(self):
+        for i in range(len(self.admins)):
+            ADMIN_LIST.append(self.admins[i].get_user_id())
 
-    def new_message(self, user_id, first_name, flags, time, text, media):
+    # обработчик входящего сообщения
+    def new_message(self, user_id, first_name, time, text, media):
         if str(user_id) in ADMIN_LIST:
-            self.new_admin_message(user_id, flags, time, text, media)
+            self.new_admin_message(user_id, time, text)
         else:
-            self.new_client_message(user_id, first_name, flags, time, text, media)
+            self.new_client_message(user_id, first_name, time, text, media)
 
-    def new_admin_message(self, admin_id, flags, time, text, media):
+    # если пишет админ
+    def new_admin_message(self, user_id, time, text):
+        current_user = None
+        for i in range(len(self.admins)):
+            if user_id == self.admins[i].get_user_id():
+                current_user = self.admins[i]
+                break
+        if current_user.get_menu_mode() == 'main':
+            if text == 'На связи':
+                self.send_message(
+                    user_id,
+                    'Статус: Online!',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+                current_user.set_online()
+            elif text == 'Занят':
+                self.send_message(
+                    user_id,
+                    'Статус: Offline!',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+                current_user.set_offline()
+            elif text == 'Мои продажи':
+                self.send_message(
+                    user_id,
+                    'Вы провели ' + str(len(current_user.get_deals_list())) + ' сделок!',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+            elif text == 'Новый завоз':
+                self.send_message(
+                    user_id,
+                    'Сколько энергетиков сейчас на руках?',
+                    ADMIN_BACK_KEYBOARD
+                )
+                current_user.set_menu_mode('delivery')
+            elif text == 'Новая сделка':
+                self.send_message(
+                    user_id,
+                    'Сколько энергетиков продано?',
+                    ADMIN_BACK_KEYBOARD
+                )
+                current_user.set_menu_mode('new_deal')
+            else:
+                self.send_message(
+                    user_id,
+                    'Я не понимаю тебя :(',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+        elif current_user.get_menu_mode() == 'delivery':
+            if text == 'Назад':
+                self.send_message(
+                    user_id,
+                    'Возвращаюсь назад...',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+                current_user.set_menu_mode('main')
+            else:
+                try:
+                    energy_amount = int(text)
+                    self.send_message(
+                        user_id,
+                        'У тебя теперь ' + str(energy_amount) + ' энергетиков!',
+                        ADMIN_MAIN_MENU_KEYBOARD
+                    )
+                    current_user.set_energy_amount(energy_amount)
+                    current_user.set_menu_mode('main')
+                except ValueError:
+                    self.send_message(
+                        user_id,
+                        'Неверное значение, попробуй еще раз!',
+                        ADMIN_BACK_KEYBOARD
+                    )
+        elif current_user.get_menu_mode() == 'new_deal':
+            if text == 'Назад':
+                self.send_message(
+                    user_id,
+                    'Возвращаюсь назад...',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+                current_user.set_menu_mode('main')
+            else:
+                try:
+                    sold = int(text)
+                    energy_amount = current_user.get_energy_amount()
+                    if sold > energy_amount or sold < 1:
+                        raise e.AmountError
+                    new_energy_amount = energy_amount - sold
+                    current_user.set_energy_amount(new_energy_amount)
+                    current_user.set_menu_mode('main')
+                    if sold > 0:
+                        current_user.new_deal([sold, time])
+                    self.send_message(
+                        user_id,
+                        'У тебя теперь ' + str(new_energy_amount) + ' энергетиков!',
+                        ADMIN_MAIN_MENU_KEYBOARD
+                    )
+                except ValueError:
+                    self.send_message(
+                        user_id,
+                        'Неверное значение, попробуй еще раз!',
+                        ADMIN_BACK_KEYBOARD
+                    )
+                except e.AmountError:
+                    self.send_message(
+                        user_id,
+                        'У тебя нет столько энергетиков!',
+                        ADMIN_BACK_KEYBOARD
+                    )
+        elif current_user.get_menu_mode() == 'start':
+            if text == 'Начать':
+                current_user.set_menu_mode('main')
+                self.send_message(
+                    user_id,
+                    'Поехали!',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+
+    # если пишет покупатель
+    def new_client_message(self, user_id, first_name, time, text, media):
         pass
 
-    def new_client_message(self, client_id, first_name, flags, time, text, media):
-        pass
+    # добавление id админа в список
+    def add_new_admin(self, admin_obj):
+        self.admins.append(admin_obj)
 
     def start_bot(self):
         # авторизация сообщества
@@ -180,7 +276,6 @@ class Adrenaline_bot:
             response = self.get_response()
             updates = response['updates']
             if updates:
-                print(updates)
                 for update in updates:
                     action_code = update[0]
                     # набор текста пользователем
@@ -202,7 +297,7 @@ class Adrenaline_bot:
                         media = update[6]
                         # если сообщение от пользователя
                         if not flags & 2:
-                            self.new_message(user_id, first_name, flags, time, text, media)
+                            self.new_message(user_id, first_name, time, text, media)
                             if text:
                                 print(first_name + ' ' + second_name + ': "' + text + '" [' + t.ctime(time) + ']')
                             # обработка вложений (прикреплять больше 10 запрещено самим вк)

@@ -1,0 +1,16 @@
+﻿{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "gfdgdfsgfd",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "positive"
+      }
+    ]
+  ]
+}

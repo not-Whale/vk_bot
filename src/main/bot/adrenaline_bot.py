@@ -6,9 +6,15 @@ import time as t
 MAX_INT = 2147483647
 VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
+
 LOPATA_ID = '448223022'
 DK_ID = ''
 POLAND_ID = ''
+ADMIN_LIST = [LOPATA_ID, DK_ID, POLAND_ID]
+
+# KEYBOARD_TEST = {"one_time": False, "buttons": [[{"action": {"type": "text", "label": "Тестовая кнопка", "payload": "{\"button\": \"1\"}"}, "color": "positive"}]]}
+# KEYBOARD_TEST = json.dumps(KEYBOARD_TEST, ensure_ascii=False).encode('utf-8')
+# KEYBOARD_TEST = str(KEYBOARD_TEST.decode('utf-8'))
 
 
 def format_input(answer):
@@ -32,10 +38,9 @@ class Adrenaline_bot:
         # для авторизации через пользователя
         self.auth_code = None
         self.remember_code = None
-        # настройки администратора
-        self.is_lopata_home = False
-        self.is_dk_home = False
-        self.is_poland_home = False
+        # администраторы и клиенты
+        self.admins = []
+        self.clients = []
 
     # слушатель кода двухфакторки
     def auth_handler(self):
@@ -92,8 +97,11 @@ class Adrenaline_bot:
             self.vk_session = None
 
     # написать в чатик
-    def write_msg(self, user_id, message):
-        values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT)}
+    def send_message(self, user_id, message, keyboard=None):
+        if keyboard is None:
+            values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT)}
+        else:
+            values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT), 'keyboard': keyboard}
         self.vk_session.method('messages.send', values=values)
 
     # получить информацию об имени пользователя
@@ -117,27 +125,36 @@ class Adrenaline_bot:
             ts=self.long_poll_ts)).json()
         return data
 
-    def change_lopata_status(self):
-        self.is_lopata_home = not self.is_lopata_home
-
-    def change_dk_status(self):
-        self.is_dk_home = not self.is_dk_home
-
-    def change_poland_status(self):
-        self.is_poland_home = not self.is_poland_home
-
-    def find_seller(self):
-        if self.is_poland_home:
-            pass
-        elif self.is_dk_home:
-            pass
-        elif self.is_lopata_home:
-            pass
-        else:
-            print('Нас пока что нет в общежитии, но мы обязательно свяжемся с вами!')
-            ''' И сюда нужно колл о заказе прикрепить '''
+    # def change_lopata_status(self):
+    #     self.is_lopata_home = not self.is_lopata_home
+    #
+    # def change_dk_status(self):
+    #     self.is_dk_home = not self.is_dk_home
+    #
+    # def change_poland_status(self):
+    #     self.is_poland_home = not self.is_poland_home
+    #
+    # def find_seller(self):
+    #     if self.is_poland_home:
+    #         pass
+    #     elif self.is_dk_home:
+    #         pass
+    #     elif self.is_lopata_home:
+    #         pass
+    #     else:
+    #         print('Нас пока что нет в общежитии, но мы обязательно свяжемся с вами!')
+    #         ''' И сюда нужно колл о заказе прикрепить '''
 
     def new_message(self, user_id, first_name, flags, time, text, media):
+        if user_id in ADMIN_LIST:
+            self.new_admin_message(user_id, flags, time, text, media)
+        else:
+            self.new_client_message(user_id, first_name, flags, time, text, media)
+
+    def new_admin_message(self, admin_id, flags, time, text, media):
+        pass
+
+    def new_client_message(self, client_id, first_name, flags, time, text, media):
         pass
 
     def start_bot(self):
@@ -178,10 +195,10 @@ class Adrenaline_bot:
                         # если сообщение от пользователя
                         if not flags & 2:
                             self.new_message(user_id, first_name, flags, time, text, media)
-                            self.write_msg(user_id, '%Ответ пользователю%')
+                            self.send_message(user_id, 'Сообщение принято ботом!')
                             if text:
                                 print(first_name + ' ' + second_name + ': "' + text + '" [' + t.ctime(time) + ']')
-                            # обработка вложений (больше 10 к сообщению прикреплять запрещено самим вк)
+                            # обработка вложений (прикреплять больше 10 запрещено самим вк)
                             for i in range(1, 11):
                                 if 'attach' + str(i) + '_type' in media.keys():
                                     print('    ' + media['attach' + str(i) + '_type'] + ': ' + media['attach' + str(i)])

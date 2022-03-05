@@ -8,10 +8,12 @@ import src.main.user.client as client
 
 MAX_INT = 2147483647
 LOPATA_ID = '448223022'
+PAY_URL = 'https://www.tinkoff.ru/rm/kravchenko.danila5/Nbfxk55061/'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
 VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
 
 ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_menu_keyboard')
+ADMIN_NEED_HELP_KEYBOARD = rj.read_json('admin_need_help_keyboard')
 
 CLIENT_MAIN_MENU_KEYBOARD = rj.read_json('client_main_menu')
 CLIENT_BUY_MENU = rj.read_json('client_buy_menu')
@@ -26,11 +28,11 @@ GO_BACK_KEYBOARD = rj.read_json('go_back_keyboard')
 ADMIN_LIST = []
 
 MISUNDERSTANDING = [
-    'Я не понимаю тебя :(',
-    'Можешь еще раз повторить? Я не расслышал тебя',
-    'Ты уверен, что хочешь именно это?',
-    'Я с радостью поддержал бы беседу, но пока не умею. Давай сыграем по сценарию!',
-    'Ничего не могу разобрать. Повтори, пожалуйста'
+    'Я не понимаю Вас :(',
+    'Можете еще раз повторить? Я не расслышал, что Вы сказали',
+    'Вы уверены, что хотите именно это?',
+    'Я с радостью поддержал бы беседу, но пока не умею. Давайте сыграем по сценарию!',
+    'Ничего не могу разобрать. Повторите, пожалуйста'
 ]
 
 
@@ -368,24 +370,85 @@ class Adrenaline_bot:
                 )
         elif current_user.get_menu_mode() == 'payment_method':
             if text == 'Переводом на Тинькофф по ссылке':
-                pass
+                current_user.set_menu_mode('payment_check')
+                self.send_message(
+                    user_id,
+                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
+                    'Чтобы перевести деньги на счёт Тинькофф, перейдите по ссылке: '
+                    f'{PAY_URL}',
+                    CLIENT_PAYMENT_CHECK_KEYBOARD
+                )
             elif text == 'Переводом на карту Сбербанка':
-                pass
+                current_user.set_menu_mode('payment_check')
+                self.send_message(
+                    user_id,
+                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
+                    'Номер карты Сбербанк: 1234 1234 1234 1234'
+                    'Перевод по номеру телефона: +7(900)123-45-67',
+                    CLIENT_PAYMENT_CHECK_KEYBOARD
+                )
             elif text == 'Переводом на карту Тинькофф':
-                pass
+                current_user.set_menu_mode('payment_check')
+                self.send_message(
+                    user_id,
+                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
+                    'Номер карты Тинькофф: 4321 4321 4321 4321'
+                    'Перевод по номеру телефона: +7(900)123-45-67',
+                    CLIENT_PAYMENT_CHECK_KEYBOARD
+                )
             elif text == 'Оплачу наличными при получении':
-                pass
+                self.send_order_done_message(current_user)
             else:
                 self.send_message(
                     user_id,
                     MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
                 )
         elif current_user.get_menu_mode() == 'admin_delay':
-            pass
+            for i in range(len(self.admins)):
+                self.send_message(
+                    self.admins[i].get_user_id(),
+                    f'Поступил новый заказ от @{user_id}. '
+                    f'Ответь ему, как только появится время!!!',
+                    ADMIN_NEED_HELP_KEYBOARD
+                )
         elif current_user.get_menu_mode() == 'payment_check':
-            pass
+            if text == 'Оплата произведена':
+                self.send_order_done_message(current_user)
+            elif text == 'Назад':
+                current_user.set_menu_mode('payment_method')
+                self.send_message(
+                    user_id,
+                    'Возращюсь назад...',
+                    CLIENT_PAYMENT_METHOD_KEYBOARD
+                )
+            else:
+                self.send_message(
+                    user_id,
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                )
         elif current_user.get_menu_mode() == 'order_done':
-            pass
+            if text == 'Я получил заказ':
+                current_user.set_menu_mode('main')
+                current_user.get_current_order().clear_order()
+                self.send_message(
+                    user_id,
+                    'Спасибо, что выбираете нас!',
+                    CLIENT_MAIN_MENU_KEYBOARD
+                )
+            else:
+                self.send_message(
+                    user_id,
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                )
+
+    def send_order_done_message(self, current_user):
+        current_user.set_menu_mode('order_done')
+        self.send_message(
+            current_user.get_user_id(),
+            f'Подходите в {current_user.get_current_order().get_admin().get_room_number()} '
+            f'комнату. Заказ уже ждет Вас!',
+            CLIENT_ORDER_DONE_KEYBOARD
+        )
 
     def find_free_admin(self):
         return None

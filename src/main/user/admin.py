@@ -1,8 +1,7 @@
 class Admin:
-    def __init__(self, user_id, pay_url, room_number, menu_mode='start'):
+    def __init__(self, user_id, room_number, menu_mode='start'):
         self.user_id = user_id
         self.room_number = room_number
-        self.pay_url = pay_url
         self.menu_mode = menu_mode
         self.energy_amount = 0
         self.is_online = False
@@ -13,9 +12,6 @@ class Admin:
 
     def get_room_number(self):
         return self.room_number
-
-    def get_pay_url(self):
-        return self.pay_url
 
     def get_status(self):
         return self.is_online

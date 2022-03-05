@@ -11,13 +11,17 @@ LOPATA_ID = '448223022'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
 VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
 
-ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_menu')
-ADMIN_BACK_KEYBOARD = rj.read_json('admin_back')
+ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_menu_keyboard')
 
 CLIENT_MAIN_MENU_KEYBOARD = rj.read_json('client_main_menu')
 CLIENT_BUY_MENU = rj.read_json('client_buy_menu')
+CLIENT_CART_KEYBOARD = rj.read_json('client_cart_keyboard')
+CLIENT_DELAY_KEYBOARD = rj.read_json('client_delay_keyboard')
+CLIENT_ORDER_DONE_KEYBOARD = rj.read_json('client_order_done_keyboard')
+CLIENT_PAYMENT_CHECK_KEYBOARD = rj.read_json('client_payment_check_keyboard')
+CLIENT_PAYMENT_METHOD_KEYBOARD = rj.read_json('client_payment_method_keyboard')
 
-KEYBOARD_TEST = rj.read_json('main_menu')
+GO_BACK_KEYBOARD = rj.read_json('go_back_keyboard')
 
 ADMIN_LIST = []
 
@@ -144,11 +148,11 @@ class Adrenaline_bot:
             ADMIN_LIST.append(self.admins[i].get_user_id())
 
     # обработчик входящего сообщения
-    def new_message(self, user_id, first_name, time, text, media):
+    def new_message(self, user_id, first_name, time, text):
         if str(user_id) in ADMIN_LIST:
             self.new_admin_message(user_id, time, text)
         else:
-            self.new_client_message(user_id, first_name, time, text, media)
+            self.new_client_message(user_id, first_name, text)
 
     # если пишет админ
     def new_admin_message(self, user_id, time, text):
@@ -182,14 +186,14 @@ class Adrenaline_bot:
                 self.send_message(
                     user_id,
                     'Сколько энергетиков сейчас на руках?',
-                    ADMIN_BACK_KEYBOARD
+                    GO_BACK_KEYBOARD
                 )
                 current_user.set_menu_mode('delivery')
             elif text == 'Новая сделка':
                 self.send_message(
                     user_id,
                     'Сколько энергетиков продано?',
-                    ADMIN_BACK_KEYBOARD
+                    GO_BACK_KEYBOARD
                 )
                 current_user.set_menu_mode('new_deal')
             else:
@@ -220,7 +224,7 @@ class Adrenaline_bot:
                     self.send_message(
                         user_id,
                         'Неверное значение, попробуй еще раз!',
-                        ADMIN_BACK_KEYBOARD
+                        GO_BACK_KEYBOARD
                     )
         elif current_user.get_menu_mode() == 'new_deal':
             if text == 'Назад':
@@ -250,13 +254,13 @@ class Adrenaline_bot:
                     self.send_message(
                         user_id,
                         'Неверное значение, попробуй еще раз!',
-                        ADMIN_BACK_KEYBOARD
+                        GO_BACK_KEYBOARD
                     )
                 except e.AmountError:
                     self.send_message(
                         user_id,
                         'У тебя нет столько энергетиков!',
-                        ADMIN_BACK_KEYBOARD
+                        GO_BACK_KEYBOARD
                     )
         elif current_user.get_menu_mode() == 'start':
             if text == 'Начать':
@@ -268,7 +272,7 @@ class Adrenaline_bot:
                 )
 
     # если пишет покупатель
-    def new_client_message(self, user_id, first_name, time, text, media):
+    def new_client_message(self, user_id, first_name, text):
         # current_user = None
         for i in range(len(self.clients)):
             if user_id == self.clients[i].get_user_id():
@@ -299,10 +303,10 @@ class Adrenaline_bot:
                     f'преобретя {current_user.get_energy_amount()} энергетиков!'
                 )
             elif text == 'Купить энергетики':
-                current_user.set_menu_mode('buy')
+                current_user.set_menu_mode('cart')
                 self.send_message(
                     user_id,
-                    'Сколько энергетиков тебе нужно?',
+                    'Сколько энергетиков Вам нужно?',
                     CLIENT_BUY_MENU
                 )
             elif text == 'Хочу сотрудничать':
@@ -320,15 +324,24 @@ class Adrenaline_bot:
                 )
         elif current_user.get_menu_mode() == 'cart':
             if text == '1':
-                pass
+                current_user.get_current_order().set_energy_amount(1)
+                self.check_free_admin(current_user)
             elif text == '2':
-                pass
+                current_user.get_current_order().set_energy_amount(2)
+                self.check_free_admin(current_user)
             elif text == '3':
-                pass
+                current_user.get_current_order().set_energy_amount(3)
+                self.check_free_admin(current_user)
             elif text == '4':
-                pass
+                current_user.get_current_order().set_energy_amount(4)
+                self.check_free_admin(current_user)
             elif text == 'Хочу больше!':
-                pass
+                current_user.set_menu_mode('big_order')
+                self.send_message(
+                    user_id,
+                    'Сколько энергетиков Вы хотите купить?',
+                    GO_BACK_KEYBOARD
+                )
             else:
                 self.send_message(
                     user_id,
@@ -338,11 +351,22 @@ class Adrenaline_bot:
             try:
                 amount = int(text)
                 if amount < 1:
-                    raise TypeError
-                pass
+                    raise e.AmountError
+                else:
+                    current_user.get_current_order().set_energy_amount(amount)
+                    self.check_free_admin(current_user)
             except TypeError:
-                pass
-        elif current_user.get_menu_mode() == 'pay':
+                self.send_message(
+                    user_id,
+                    'Не получилось обработать Ваш запрос. '
+                    'Введите числом, сколько энергетиков Вам нужно'
+                )
+            except e.AmountError:
+                self.send_message(
+                    user_id,
+                    'Вы хотите отдать нам энергетики? Так нельзя! :)'
+                )
+        elif current_user.get_menu_mode() == 'payment_method':
             if text == 'Переводом на Тинькофф по ссылке':
                 pass
             elif text == 'Переводом на карту Сбербанка':
@@ -356,12 +380,35 @@ class Adrenaline_bot:
                     user_id,
                     MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
                 )
-        elif current_user.get_menu_mode() == 'delay':
+        elif current_user.get_menu_mode() == 'admin_delay':
             pass
-        elif current_user.get_menu_mode() == 'SKAM_check':
+        elif current_user.get_menu_mode() == 'payment_check':
             pass
-        elif current_user.get_menu_mode() == 'done':
+        elif current_user.get_menu_mode() == 'order_done':
             pass
+
+    def find_free_admin(self):
+        return None
+
+    def check_free_admin(self, current_user):
+        free_admin = self.find_free_admin()
+        if free_admin is None:
+            current_user.set_menu_mode('admin_delay')
+            self.send_message(
+                current_user.get_user_id(),
+                'К сожалению, нас сейчас нет в общежитии или мы все спим. '
+                'Не нажимайте ничего, и мы свяжемся в вами. '
+                'Либо Вы можете отменить заказ и попробовать еще раз позже.',
+                CLIENT_DELAY_KEYBOARD
+            )
+        else:
+            current_user.set_menu_mode('payment_method')
+            current_user.get_current_order().set_admin(free_admin)
+            self.send_message(
+                current_user.get_user_id(),
+                'Выберите удобный способ оплаты...',
+                CLIENT_PAYMENT_METHOD_KEYBOARD
+            )
 
     # добавление id админа в список
     def add_new_admin(self, admin_obj):
@@ -406,7 +453,7 @@ class Adrenaline_bot:
                         media = update[6]
                         # если сообщение от пользователя
                         if not flags & 2:
-                            self.new_message(user_id, first_name, time, text, media)
+                            self.new_message(user_id, first_name, time, text)
                             if text:
                                 print(first_name + ' ' + second_name + ': "' + text + '" [' + t.ctime(time) + ']')
                             # обработка вложений (прикреплять больше 10 запрещено самим вк)

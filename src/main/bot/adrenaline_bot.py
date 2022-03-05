@@ -4,16 +4,30 @@ import time as t
 from random import randint
 import src.main.bot.errors as e
 import src.main.bot.read_json as rj
+import src.main.user.client as client
 
 MAX_INT = 2147483647
-VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
+LOPATA_ID = '448223022'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
+VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
 
 ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_menu')
 ADMIN_BACK_KEYBOARD = rj.read_json('admin_back')
+
+CLIENT_MAIN_MENU_KEYBOARD = rj.read_json('client_main_menu')
+CLIENT_BUY_MENU = rj.read_json('client_buy_menu')
+
 KEYBOARD_TEST = rj.read_json('main_menu')
 
 ADMIN_LIST = []
+
+MISUNDERSTANDING = [
+    'Я не понимаю тебя :(',
+    'Можешь еще раз повторить? Я не расслышал тебя',
+    'Ты уверен, что хочешь именно это?',
+    'Я с радостью поддержал бы беседу, но пока не умею. Давай сыграем по сценарию!',
+    'Ничего не могу разобрать. Повтори, пожалуйста'
+]
 
 
 def format_input(answer):
@@ -181,7 +195,7 @@ class Adrenaline_bot:
             else:
                 self.send_message(
                     user_id,
-                    'Я не понимаю тебя :(',
+                    'Такой команды нет, ты меня не обманешь)',
                     ADMIN_MAIN_MENU_KEYBOARD
                 )
         elif current_user.get_menu_mode() == 'delivery':
@@ -255,7 +269,99 @@ class Adrenaline_bot:
 
     # если пишет покупатель
     def new_client_message(self, user_id, first_name, time, text, media):
-        pass
+        # current_user = None
+        for i in range(len(self.clients)):
+            if user_id == self.clients[i].get_user_id():
+                current_user = self.clients[i]
+                break
+        else:
+            current_user = client.Client(user_id, first_name)
+            self.clients.append(current_user)
+        if current_user.get_menu_mode() == 'start':
+            if text == 'Начать':
+                current_user.set_menu_mode('main')
+                self.send_message(
+                    user_id,
+                    'Поехали!',
+                    CLIENT_MAIN_MENU_KEYBOARD
+                )
+            else:
+                self.send_message(
+                    user_id,
+                    'Для запуска бота напиши "Начать"!'
+                )
+        elif current_user.get_menu_mode() == 'main':
+            if text == 'Моя статистика':
+                self.send_message(
+                    user_id,
+                    f'{current_user.get_user_name()}, '
+                    f'Вы совершили {current_user.get_number_of_deals()} сделок, '
+                    f'преобретя {current_user.get_energy_amount()} энергетиков!'
+                )
+            elif text == 'Купить энергетики':
+                current_user.set_menu_mode('buy')
+                self.send_message(
+                    user_id,
+                    'Сколько энергетиков тебе нужно?',
+                    CLIENT_BUY_MENU
+                )
+            elif text == 'Хочу сотрудничать':
+                link = self.vk_session.method('users.get', values={'user_ids': f'{LOPATA_ID}'})[0]['id']
+                self.send_message(
+                    user_id,
+                    'Если хочешь обсудить возможность сотрудничества, '
+                    'получения скидки или просто поговорить с Лопатусом), '
+                    f'пиши [{link}|сюда]!'
+                )
+            else:
+                self.send_message(
+                    user_id,
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                )
+        elif current_user.get_menu_mode() == 'cart':
+            if text == '1':
+                pass
+            elif text == '2':
+                pass
+            elif text == '3':
+                pass
+            elif text == '4':
+                pass
+            elif text == 'Хочу больше!':
+                pass
+            else:
+                self.send_message(
+                    user_id,
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                )
+        elif current_user.get_menu_mode() == 'big_order':
+            try:
+                amount = int(text)
+                if amount < 1:
+                    raise TypeError
+                pass
+            except TypeError:
+                pass
+        elif current_user.get_menu_mode() == 'pay':
+            if text == 'Переводом на Тинькофф по ссылке':
+                pass
+            elif text == 'Переводом на карту Сбербанка':
+                pass
+            elif text == 'Переводом на карту Тинькофф':
+                pass
+            elif text == 'Оплачу наличными при получении':
+                pass
+            else:
+                self.send_message(
+                    user_id,
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                )
+        elif current_user.get_menu_mode() == 'delay':
+            pass
+        elif current_user.get_menu_mode() == 'SKAM_check':
+            pass
+        elif current_user.get_menu_mode() == 'done':
+            pass
 
     # добавление id админа в список
     def add_new_admin(self, admin_obj):

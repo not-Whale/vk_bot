@@ -1,4 +1,4 @@
-﻿{
+{
   "one_time": false,
   "buttons": [
     [
@@ -6,10 +6,10 @@
         "action":
         {
           "type": "text",
-          "label": "NEW TEXT",
+          "label": "Вернуться в меню",
           "payload": "{\"button\": \"1\"}"
         },
-        "color": "positive"
+        "color": "secondary"
       }
     ]
   ]

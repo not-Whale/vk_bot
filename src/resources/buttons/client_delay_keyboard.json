@@ -1,0 +1,16 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Отменить заказ",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

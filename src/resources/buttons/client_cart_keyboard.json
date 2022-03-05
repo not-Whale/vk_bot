@@ -1,0 +1,54 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "1",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "secondary"
+      },
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "2",
+          "payload": "{\"button\": \"2\"}"
+        },
+        "color": "secondary"
+      },
+            {
+        "action":
+        {
+          "type": "text",
+          "label": "3",
+          "payload": "{\"button\": \"3\"}"
+        },
+        "color": "secondary"
+      },
+            {
+        "action":
+        {
+          "type": "text",
+          "label": "4",
+          "payload": "{\"button\": \"4\"}"
+        },
+        "color": "secondary"
+      }
+    ],
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Хочу больше!",
+          "payload": "{\"button\": \"5\"}"
+        },
+        "color": "secondary"
+      }
+    ]
+  ]
+}

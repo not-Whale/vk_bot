@@ -1,0 +1,36 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Моя статистика",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "secondary"
+      },
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Хочу сотрудничать",
+          "payload": "{\"button\": \"2\"}"
+        },
+        "color": "secondary"
+      }
+    ],
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Купить энергетики",
+          "payload": "{\"button\": \"3\"}"
+        },
+        "color": "positive"
+      }
+    ]
+  ]
+}

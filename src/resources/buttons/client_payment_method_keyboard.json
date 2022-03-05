@@ -1,0 +1,49 @@
+{
+  "one_time": false,
+  "buttons": [
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Переводом на Тинькофф по ссылке",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "secondary"
+      }
+    ],
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Переводом на карту Сбербанка",
+          "payload": "{\"button\": \"2\"}"
+        },
+        "color": "secondary"
+      }
+    ],
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Переводом на карту Тинькофф",
+          "payload": "{\"button\": \"3\"}"
+        },
+        "color": "secondary"
+      }
+    ],
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Оплачу наличными при получении",
+          "payload": "{\"button\": \"4\"}"
+        },
+        "color": "secondary"
+      }
+    ]
+  ]
+}

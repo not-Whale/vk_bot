@@ -1,3 +1,6 @@
+import os
+import pickle
+
 import vk_api
 import requests
 import time as t
@@ -34,6 +37,19 @@ MISUNDERSTANDING = [
     'Ничего не могу разобрать. Повторите, пожалуйста'
 ]
 
+KEYBOARDS = {
+    'client_main': CLIENT_MAIN_MENU_KEYBOARD,
+    'client_cart': CLIENT_CART_KEYBOARD,
+    'client_admin_delay': CLIENT_DELAY_KEYBOARD,
+    'client_order_done': CLIENT_ORDER_DONE_KEYBOARD,
+    'client_payment_check': CLIENT_PAYMENT_CHECK_KEYBOARD,
+    'client_payment_method': CLIENT_PAYMENT_METHOD_KEYBOARD,
+    'client_go_back': GO_BACK_KEYBOARD,
+    'admin_go_back': GO_BACK_KEYBOARD,
+    'admin_main': ADMIN_MAIN_MENU_KEYBOARD,
+    'admin_need_help': ADMIN_NEED_HELP_KEYBOARD
+}
+
 
 def format_input(answer):
     return answer.lower().replace(' ', '')
@@ -64,6 +80,9 @@ class Adrenaline_bot:
         # администраторы и клиенты
         self.admins = []
         self.clients = []
+        # в случае перезапуска
+        self.load_clients()
+        self.load_admins()
 
     # слушатель кода двухфакторки
     def auth_handler(self):
@@ -118,6 +137,46 @@ class Adrenaline_bot:
         except vk_api.VkApiError as error_message:
             print_error(error_message)
             self.vk_session = None
+
+    def save_clients(self):
+        with open('../resources/users/clients.pickle', 'wb') as clients_list:
+            pickle.dump(self.clients, clients_list)
+        clients_list.close()
+
+    def save_admins(self):
+        with open('../resources/users/admins.pickle', 'wb') as admins_list:
+            pickle.dump(self.admins, admins_list)
+        admins_list.close()
+
+    def load_clients(self):
+        if os.path.exists('../resources/users/clients.pickle'):
+            with open('../resources/users/clients.pickle', 'rb') as clients_list:
+                self.clients = pickle.load(clients_list)
+            clients_list.close()
+
+    def load_admins(self):
+        if os.path.exists('../resources/users/admins.pickle'):
+            with open('../resources/users/admins.pickle', 'rb') as admins_list:
+                self.admins = pickle.load(admins_list)
+            for i in range(len(self.admins)):
+                print(f'Admin {i + 1}: {self.admins[i].get_user_id()}, menu_mode: {self.admins[i].get_menu_mode()}')
+            admins_list.close()
+
+    def set_clients_actual_keyboard(self):
+        for i in range(len(self.clients)):
+            self.send_message(
+                self.clients[i].get_user_id(),
+                'Бот был перезапущен!',
+                KEYBOARDS['client_' + self.clients[i].get_menu_mode()]
+            )
+
+    def set_admins_actual_keyboard(self):
+        for i in range(len(self.admins)):
+            self.send_message(
+                self.admins[i].get_user_id(),
+                'Бот был перезапущен!',
+                KEYBOARDS['admin_' + self.admins[i].get_menu_mode()]
+            )
 
     # написать в чатик
     def send_message(self, user_id, message, keyboard=''):
@@ -287,6 +346,7 @@ class Adrenaline_bot:
         else:
             current_user = client.Client(user_id, first_name)
             self.clients.append(current_user)
+            self.save_clients()
         if current_user.get_menu_mode() == 'start':
             if text == 'Начать':
                 current_user.set_menu_mode('main')
@@ -501,6 +561,7 @@ class Adrenaline_bot:
     # добавление id админа в список
     def add_new_admin(self, admin_obj):
         self.admins.append(admin_obj)
+        self.save_admins()
 
     def start_bot(self):
         # авторизация сообщества
@@ -514,6 +575,10 @@ class Adrenaline_bot:
 
         # заполнения списка админов
         self.fill_admin_list()
+
+        # загрузка актуальных клавиатур
+        self.set_clients_actual_keyboard()
+        self.set_admins_actual_keyboard()
 
         # цикл запросов к LongPoll серверу
         while True:

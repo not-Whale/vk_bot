@@ -2,7 +2,7 @@ import src.main.user.order as order
 
 
 class Client:
-    def __init__(self, client_id, first_name, menu_mode='main'):
+    def __init__(self, client_id, first_name, menu_mode='start'):
         self.user_id = client_id
         self.name = first_name
         self.menu_mode = menu_mode

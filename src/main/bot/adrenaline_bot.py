@@ -4,15 +4,14 @@ import vk_api
 import requests
 import time as t
 from random import randint
-import src.main.bot.errors as e
-import src.main.bot.read_json as rj
-import src.main.user.client as client
+from src.main.bot.utility_funcs import *
+from src.main.user.client import Client
+from src.main.bot.errors import AmountError
 
 MAX_INT = 2147483647
+ONE_ENERGY_DRINK_PRICE = 65
 
 LOPATA_ID = '448223022'
-
-ONE_ENERGY_DRINK_PRICE = 65
 SBERBANK_CARD_NUMBER = '1234 1234 1234 1234'
 TINKOFF_CARD_NUMBER = '4321 4321 4321 4321'
 TELEPHONE_FOR_PAYMENT = '+7(912)345-67-89'
@@ -28,17 +27,17 @@ VK_PASSWORD = 'your_password'
 CLIENTS_PICKLE_PATH = '../resources/users/clients.pickle'
 ADMINS_PICKLE_PATH = '../resources/users/admins.pickle'
 
-ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_keyboard')
-ADMIN_NEED_HELP_KEYBOARD = rj.read_json('admin_need_help_keyboard')
+ADMIN_MAIN_MENU_KEYBOARD = read_json('admin_main_keyboard')
+ADMIN_NEED_HELP_KEYBOARD = read_json('admin_need_help_keyboard')
 
-CLIENT_MAIN_MENU_KEYBOARD = rj.read_json('client_main_keyboard')
-CLIENT_CART_KEYBOARD = rj.read_json('client_cart_keyboard')
-CLIENT_DELAY_KEYBOARD = rj.read_json('client_delay_keyboard')
-CLIENT_ORDER_DONE_KEYBOARD = rj.read_json('client_order_done_keyboard')
-CLIENT_PAYMENT_CHECK_KEYBOARD = rj.read_json('client_payment_check_keyboard')
-CLIENT_PAYMENT_METHOD_KEYBOARD = rj.read_json('client_payment_method_keyboard')
+CLIENT_MAIN_MENU_KEYBOARD = read_json('client_main_keyboard')
+CLIENT_CART_KEYBOARD = read_json('client_cart_keyboard')
+CLIENT_DELAY_KEYBOARD = read_json('client_delay_keyboard')
+CLIENT_ORDER_DONE_KEYBOARD = read_json('client_order_done_keyboard')
+CLIENT_PAYMENT_CHECK_KEYBOARD = read_json('client_payment_check_keyboard')
+CLIENT_PAYMENT_METHOD_KEYBOARD = read_json('client_payment_method_keyboard')
 
-GO_BACK_KEYBOARD = rj.read_json('go_back_keyboard')
+GO_BACK_KEYBOARD = read_json('go_back_keyboard')
 
 ADMIN_LIST = []
 
@@ -63,16 +62,6 @@ KEYBOARDS = {
     'admin_main': ADMIN_MAIN_MENU_KEYBOARD,
     'admin_need_help': ADMIN_NEED_HELP_KEYBOARD
 }
-
-
-def format_input(answer):
-    return answer.lower().replace(' ', '')
-
-
-def print_error(error_message):
-    print('\033[31mError! Message:')
-    print(error_message)
-    print('\033[0m')
 
 
 class Adrenaline_bot:
@@ -313,7 +302,7 @@ class Adrenaline_bot:
                 try:
                     energy_amount = int(text)
                     if energy_amount < 0:
-                        raise e.AmountError
+                        raise AmountError
                     current_user.set_menu_mode('main')
                     current_user.set_energy_amount(energy_amount)
                     self.save_admins()
@@ -327,7 +316,7 @@ class Adrenaline_bot:
                         user_id,
                         'Неверное значение, попробуй еще раз!'
                     )
-                except e.AmountError:
+                except AmountError:
                     self.send_message(
                         user_id,
                         'У тебя не может быть отрицательное число энергетиков, попробуй еще раз!'
@@ -346,7 +335,7 @@ class Adrenaline_bot:
                     sold = int(text)
                     energy_amount = current_user.get_energy_amount()
                     if sold > energy_amount or sold < 1:
-                        raise e.AmountError
+                        raise AmountError
                     current_user.set_menu_mode('main')
                     new_energy_amount = energy_amount - sold
                     current_user.set_energy_amount(new_energy_amount)
@@ -363,7 +352,7 @@ class Adrenaline_bot:
                         user_id,
                         'Неверное значение, попробуй еще раз!'
                     )
-                except e.AmountError:
+                except AmountError:
                     self.send_message(
                         user_id,
                         'У тебя нет столько энергетиков!'
@@ -398,7 +387,7 @@ class Adrenaline_bot:
                 current_user = self.clients[i]
                 break
         else:
-            current_user = client.Client(user_id, first_name)
+            current_user = Client(user_id, first_name)
             self.clients.append(current_user)
             self.save_clients()
         if current_user.get_menu_mode() == 'start':
@@ -481,7 +470,7 @@ class Adrenaline_bot:
             try:
                 amount = int(text)
                 if amount < 1:
-                    raise e.AmountError
+                    raise AmountError
                 else:
                     current_user.get_current_order().set_energy_amount(amount)
                     self.get_free_admin_and_continue(current_user)
@@ -500,7 +489,7 @@ class Adrenaline_bot:
                         'Не получилось обработать Ваш запрос. '
                         'Введите числом, сколько энергетиков Вам нужно!'
                     )
-            except e.AmountError:
+            except AmountError:
                 self.send_message(
                     user_id,
                     'Вы хотите отдать нам энергетики? Так нельзя! :)'

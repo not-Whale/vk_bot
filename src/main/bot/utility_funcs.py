@@ -6,3 +6,13 @@ def read_json(file_name):
         keyboard = json.dumps(json.load(json_keyboard), ensure_ascii=False).encode('utf-8-sig')
     json_keyboard.close()
     return str(keyboard.decode('utf-8-sig'))
+
+
+def format_input(answer):
+    return answer.lower().replace(' ', '')
+
+
+def print_error(error_message):
+    print('\033[31mError! Message:')
+    print(error_message)
+    print('\033[0m')

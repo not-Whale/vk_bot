@@ -138,22 +138,26 @@ class Adrenaline_bot:
             print_error(error_message)
             self.vk_session = None
 
+    # сохранение списка клиентов
     def save_clients(self):
         with open('../resources/users/clients.pickle', 'wb') as clients_list:
             pickle.dump(self.clients, clients_list)
         clients_list.close()
 
+    # сохранение списка админов
     def save_admins(self):
         with open('../resources/users/admins.pickle', 'wb') as admins_list:
             pickle.dump(self.admins, admins_list)
         admins_list.close()
 
+    # загрузка списка клиентов
     def load_clients(self):
         if os.path.exists('../resources/users/clients.pickle'):
             with open('../resources/users/clients.pickle', 'rb') as clients_list:
                 self.clients = pickle.load(clients_list)
             clients_list.close()
 
+    # загрузка списка админов
     def load_admins(self):
         if os.path.exists('../resources/users/admins.pickle'):
             with open('../resources/users/admins.pickle', 'rb') as admins_list:
@@ -162,6 +166,7 @@ class Adrenaline_bot:
                 print(f'Admin {i + 1}: {self.admins[i].get_user_id()}, menu_mode: {self.admins[i].get_menu_mode()}')
             admins_list.close()
 
+    # установка последней активной клавиатуры для админа
     def set_clients_actual_keyboard(self):
         for i in range(len(self.clients)):
             self.send_message(
@@ -170,6 +175,7 @@ class Adrenaline_bot:
                 KEYBOARDS['client_' + self.clients[i].get_menu_mode()]
             )
 
+    # установка последней активной клавиатуры для клиента
     def set_admins_actual_keyboard(self):
         for i in range(len(self.admins)):
             self.send_message(
@@ -228,39 +234,36 @@ class Adrenaline_bot:
                 break
         if current_user.get_menu_mode() == 'main':
             if text == 'На связи':
-                self.send_message(
-                    user_id,
-                    'Статус: Online!',
-                    ADMIN_MAIN_MENU_KEYBOARD
-                )
                 current_user.set_online()
-            elif text == 'Занят':
                 self.send_message(
                     user_id,
-                    'Статус: Offline!',
-                    ADMIN_MAIN_MENU_KEYBOARD
+                    'Статус: Online!'
                 )
+            elif text == 'Занят':
                 current_user.set_offline()
+                self.send_message(
+                    user_id,
+                    'Статус: Offline!'
+                )
             elif text == 'Мои продажи':
                 self.send_message(
                     user_id,
-                    'Вы провели ' + str(len(current_user.get_deals_list())) + ' сделок!',
-                    ADMIN_MAIN_MENU_KEYBOARD
+                    'Ты провел ' + str(len(current_user.get_deals_list())) + ' сделок!'
                 )
             elif text == 'Новый завоз':
+                current_user.set_menu_mode('delivery')
                 self.send_message(
                     user_id,
                     'Сколько энергетиков сейчас на руках?',
                     GO_BACK_KEYBOARD
                 )
-                current_user.set_menu_mode('delivery')
             elif text == 'Новая сделка':
+                current_user.set_menu_mode('new_deal')
                 self.send_message(
                     user_id,
                     'Сколько энергетиков продано?',
                     GO_BACK_KEYBOARD
                 )
-                current_user.set_menu_mode('new_deal')
             else:
                 self.send_message(
                     user_id,
@@ -269,45 +272,51 @@ class Adrenaline_bot:
                 )
         elif current_user.get_menu_mode() == 'delivery':
             if text == 'Назад':
+                current_user.set_menu_mode('main')
                 self.send_message(
                     user_id,
                     'Возвращаюсь назад...',
                     ADMIN_MAIN_MENU_KEYBOARD
                 )
-                current_user.set_menu_mode('main')
             else:
                 try:
                     energy_amount = int(text)
+                    if energy_amount < 0:
+                        raise e.AmountError
+                    current_user.set_menu_mode('main')
+                    current_user.set_energy_amount(energy_amount)
                     self.send_message(
                         user_id,
                         'У тебя теперь ' + str(energy_amount) + ' энергетиков!',
                         ADMIN_MAIN_MENU_KEYBOARD
                     )
-                    current_user.set_energy_amount(energy_amount)
-                    current_user.set_menu_mode('main')
                 except ValueError:
                     self.send_message(
                         user_id,
-                        'Неверное значение, попробуй еще раз!',
-                        GO_BACK_KEYBOARD
+                        'Неверное значение, попробуй еще раз!'
+                    )
+                except e.AmountError:
+                    self.send_message(
+                        user_id,
+                        'У тебя не может быть отрицательное число энерегтиков, попробуй еще раз!'
                     )
         elif current_user.get_menu_mode() == 'new_deal':
             if text == 'Назад':
+                current_user.set_menu_mode('main')
                 self.send_message(
                     user_id,
                     'Возвращаюсь назад...',
                     ADMIN_MAIN_MENU_KEYBOARD
                 )
-                current_user.set_menu_mode('main')
             else:
                 try:
                     sold = int(text)
                     energy_amount = current_user.get_energy_amount()
                     if sold > energy_amount or sold < 1:
                         raise e.AmountError
+                    current_user.set_menu_mode('main')
                     new_energy_amount = energy_amount - sold
                     current_user.set_energy_amount(new_energy_amount)
-                    current_user.set_menu_mode('main')
                     if sold > 0:
                         current_user.new_deal([sold, time])
                     self.send_message(
@@ -334,6 +343,11 @@ class Adrenaline_bot:
                     user_id,
                     'Поехали!',
                     ADMIN_MAIN_MENU_KEYBOARD
+                )
+            else:
+                self.send_message(
+                    user_id,
+                    'Чтобы запустить бота напиши "Начать"'
                 )
 
     # если пишет покупатель

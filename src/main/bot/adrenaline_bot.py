@@ -1,6 +1,5 @@
 import os
 import pickle
-
 import vk_api
 import requests
 import time as t
@@ -10,11 +9,24 @@ import src.main.bot.read_json as rj
 import src.main.user.client as client
 
 MAX_INT = 2147483647
+
 LOPATA_ID = '448223022'
+
+ONE_ENERGY_DRINK_PRICE = 65
+SBERBANK_CARD_NUMBER = '1234 1234 1234 1234'
+TINKOFF_CARD_NUMBER = '4321 4321 4321 4321'
+TELEPHONE_FOR_PAYMENT = '+7(912)345-67-89'
+
 PAY_URL = 'https://www.tinkoff.ru/rm/kravchenko.danila5/Nbfxk55061/'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
 FEEDBACK_URL = 'https://vk.com/adrenaline_ebelke_raskazambusi?w=wall-210973828_1'
+
 VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
+VK_LOGIN = 'your_login'
+VK_PASSWORD = 'your_password'
+
+CLIENTS_PICKLE_PATH = '../resources/users/clients.pickle'
+ADMINS_PICKLE_PATH = '../resources/users/admins.pickle'
 
 ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_keyboard')
 ADMIN_NEED_HELP_KEYBOARD = rj.read_json('admin_need_help_keyboard')
@@ -77,7 +89,7 @@ class Adrenaline_bot:
         # администраторы и клиенты
         self.admins = []
         self.clients = []
-        # в случае перезапуска
+        # загрузка, если есть, базы пользователей
         self.load_clients()
         self.load_admins()
 
@@ -96,9 +108,8 @@ class Adrenaline_bot:
 
     # авторизация пользователя
     def login_as_user(self):
-        login, password = 'your_login', 'your_password'
         self.vk_session = vk_api.VkApi(
-            login, password,
+            VK_LOGIN, VK_PASSWORD
         )
         try:
             self.vk_session.auth()
@@ -111,9 +122,8 @@ class Adrenaline_bot:
 
     # авторизация пользователя с двухфакторкой
     def login_as_user_two_factor(self):
-        login, password = 'your_login', 'your_password'
         self.vk_session = vk_api.VkApi(
-            login, password,
+            VK_LOGIN, VK_PASSWORD,
             auth_handler=self.auth_handler
         )
         try:
@@ -137,32 +147,28 @@ class Adrenaline_bot:
 
     # сохранение списка клиентов
     def save_clients(self):
-        with open('../resources/users/clients.pickle', 'wb') as clients_list:
+        with open(CLIENTS_PICKLE_PATH, 'wb') as clients_list:
             pickle.dump(self.clients, clients_list)
         clients_list.close()
 
     # сохранение списка админов
     def save_admins(self):
-        with open('../resources/users/admins.pickle', 'wb') as admins_list:
+        with open(ADMINS_PICKLE_PATH, 'wb') as admins_list:
             pickle.dump(self.admins, admins_list)
         admins_list.close()
 
     # загрузка списка клиентов
     def load_clients(self):
-        if os.path.exists('../resources/users/clients.pickle'):
-            with open('../resources/users/clients.pickle', 'rb') as clients_list:
+        if os.path.exists(CLIENTS_PICKLE_PATH):
+            with open(CLIENTS_PICKLE_PATH, 'rb') as clients_list:
                 self.clients = pickle.load(clients_list)
-            for i in range(len(self.clients)):
-                print(f'Client {i + 1}: {self.clients[i].get_user_id()}, menu_mode: {self.clients[i].get_menu_mode()}')
             clients_list.close()
 
     # загрузка списка админов
     def load_admins(self):
-        if os.path.exists('../resources/users/admins.pickle'):
-            with open('../resources/users/admins.pickle', 'rb') as admins_list:
+        if os.path.exists(ADMINS_PICKLE_PATH):
+            with open(ADMINS_PICKLE_PATH, 'rb') as admins_list:
                 self.admins = pickle.load(admins_list)
-            for i in range(len(self.admins)):
-                print(f'Admin {i + 1}: {self.admins[i].get_user_id()}, menu_mode: {self.admins[i].get_menu_mode()}')
             admins_list.close()
 
     # установка последней активной клавиатуры для админа
@@ -233,11 +239,14 @@ class Adrenaline_bot:
 
     # если пишет админ
     def new_admin_message(self, user_id, time, text):
-        current_user = None
         for i in range(len(self.admins)):
             if str(user_id) == self.admins[i].get_user_id():
                 current_user = self.admins[i]
                 break
+        else:
+            current_user = None
+            print_error('Админа не найдено в списке!')
+            exit(1)
         if current_user.get_menu_mode() == 'start':
             if text == 'Начать':
                 current_user.set_menu_mode('main')
@@ -321,7 +330,7 @@ class Adrenaline_bot:
                 except e.AmountError:
                     self.send_message(
                         user_id,
-                        'У тебя не может быть отрицательное число энерегтиков, попробуй еще раз!'
+                        'У тебя не может быть отрицательное число энергетиков, попробуй еще раз!'
                     )
         elif current_user.get_menu_mode() == 'new_deal':
             if text == 'Назад':
@@ -502,7 +511,7 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
+                    f'К оплате {current_user.get_current_order().get_energy_amount() * ONE_ENERGY_DRINK_PRICE} рублей. '
                     'Чтобы перевести деньги на счёт Тинькофф, перейдите по ссылке: \n'
                     f'{PAY_URL}',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
@@ -512,9 +521,11 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. \n'
-                    'Номер карты Сбербанк:\n1234 1234 1234 1234\n'
-                    'Перевод по номеру телефона:\n+7(900)123-45-67',
+                    f'К оплате '
+                    f'{current_user.get_current_order().get_energy_amount() * ONE_ENERGY_DRINK_PRICE} '
+                    f'рублей. \n'
+                    f'Номер карты Сбербанк:\n{SBERBANK_CARD_NUMBER}\n'
+                    f'Перевод по номеру телефона:\n{TELEPHONE_FOR_PAYMENT}',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
             elif text == 'Переводом на карту Тинькофф':
@@ -522,9 +533,11 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. \n'
-                    'Номер карты Тинькофф:\n4321 4321 4321 4321\n'
-                    'Перевод по номеру телефона:\n+7(900)123-45-67',
+                    f'К оплате '
+                    f'{current_user.get_current_order().get_energy_amount() * ONE_ENERGY_DRINK_PRICE} '
+                    f'рублей. \n'
+                    f'Номер карты Тинькофф:\n{TINKOFF_CARD_NUMBER}\n'
+                    f'Перевод по номеру телефона:\n{TELEPHONE_FOR_PAYMENT}',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
             elif text == 'Оплачу наличными при получении':
@@ -545,12 +558,12 @@ class Adrenaline_bot:
                 )
         elif current_user.get_menu_mode() == 'admin_delay':
             if text == 'Мне помогли':
-                current_user.set_menu_mode('payment_method')
+                current_user.set_menu_mode('order_done')
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    'Выберите удобный способ оплаты...',
-                    CLIENT_PAYMENT_METHOD_KEYBOARD
+                    'Мы рады, что все хорошо!',
+                    CLIENT_ORDER_DONE_KEYBOARD
                 )
             elif text == 'Отменить заказ':
                 current_user.set_menu_mode('main')
@@ -606,7 +619,8 @@ class Adrenaline_bot:
         self.save_clients()
         self.send_message(
             current_user.get_user_id(),
-            f'Подходите в {current_user.get_current_order().get_admin().get_room_number()} '
+            f'Подходите в '
+            f'{current_user.get_current_order().get_admin().get_room_number()} '
             f'комнату. Заказ уже ждет Вас!',
             CLIENT_ORDER_DONE_KEYBOARD
         )
@@ -672,8 +686,8 @@ class Adrenaline_bot:
         self.fill_admin_list()
 
         # загрузка актуальных клавиатур
-        self.set_clients_actual_keyboard()
         self.set_admins_actual_keyboard()
+        self.set_clients_actual_keyboard()
 
         # цикл запросов к LongPoll серверу
         while True:

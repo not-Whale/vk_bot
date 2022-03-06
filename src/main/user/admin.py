@@ -1,8 +1,11 @@
 class Admin:
-    def __init__(self, user_id, room_number, menu_mode='start'):
+    def __init__(self, user_id, room_number, sberbank_card, tinkoff_card, telephone_number, menu_mode='start'):
         self.user_id = user_id
         self.room_number = room_number
         self.menu_mode = menu_mode
+        self.sberbank_card = sberbank_card
+        self.tinkoff_card = tinkoff_card
+        self.telephone_number = telephone_number
         self.energy_amount = 0
         self.is_online = False
         self.deals = []
@@ -24,6 +27,15 @@ class Admin:
 
     def get_energy_amount(self):
         return self.energy_amount
+
+    def get_sberbank_card(self):
+        return self.sberbank_card
+
+    def get_tinkoff_card(self):
+        return self.tinkoff_card
+
+    def get_telephone_number(self):
+        return self.telephone_number
 
     def set_online(self):
         self.is_online = True

@@ -459,8 +459,10 @@ class Adrenaline_bot:
                     f'К оплате '
                     f'{current_user.get_current_order().get_energy_amount() * ONE_ENERGY_DRINK_PRICE} '
                     f'рублей. \n'
-                    f'Номер карты Сбербанк:\n{SBERBANK_CARD_NUMBER}\n'
-                    f'Перевод по номеру телефона:\n{TELEPHONE_FOR_PAYMENT}',
+                    f'Номер карты Сбербанк:\n'
+                    f'{current_user.get_current_order().get_admin().get_sberbank_card()}\n'
+                    f'Перевод по номеру телефона:\n'
+                    f'{current_user.get_current_order().get_admin().get_telephone_number()}',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
             elif text == 'Переводом на карту Тинькофф':
@@ -471,8 +473,10 @@ class Adrenaline_bot:
                     f'К оплате '
                     f'{current_user.get_current_order().get_energy_amount() * ONE_ENERGY_DRINK_PRICE} '
                     f'рублей. \n'
-                    f'Номер карты Тинькофф:\n{TINKOFF_CARD_NUMBER}\n'
-                    f'Перевод по номеру телефона:\n{TELEPHONE_FOR_PAYMENT}',
+                    f'Номер карты Тинькофф:\n'
+                    f'{current_user.get_current_order().get_admin().get_tinkoff_card()}\n'
+                    f'Перевод по номеру телефона:\n'
+                    f'{current_user.get_current_order().get_admin().get_telephone_number()}',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
             elif text == 'Оплачу наличными при получении':

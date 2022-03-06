@@ -58,7 +58,7 @@
           "label": "Назад",
           "payload": "{\"button\": \"6\"}"
         },
-        "color": "secondary"
+        "color": "negative"
       }
     ]
   ]

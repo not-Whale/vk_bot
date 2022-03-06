@@ -152,6 +152,8 @@ class Adrenaline_bot:
         if os.path.exists('../resources/users/clients.pickle'):
             with open('../resources/users/clients.pickle', 'rb') as clients_list:
                 self.clients = pickle.load(clients_list)
+            for i in range(len(self.clients)):
+                print(f'Client {i + 1}: {self.clients[i].get_user_id()}, menu_mode: {self.clients[i].get_menu_mode()}')
             clients_list.close()
 
     # загрузка списка админов
@@ -287,8 +289,7 @@ class Adrenaline_bot:
             else:
                 self.send_message(
                     user_id,
-                    'Такой команды нет, ты меня не обманешь)',
-                    ADMIN_MAIN_MENU_KEYBOARD
+                    'Такой команды нет, ты меня не обманешь)'
                 )
         elif current_user.get_menu_mode() == 'delivery':
             if text == 'Назад':
@@ -351,14 +352,12 @@ class Adrenaline_bot:
                 except ValueError:
                     self.send_message(
                         user_id,
-                        'Неверное значение, попробуй еще раз!',
-                        GO_BACK_KEYBOARD
+                        'Неверное значение, попробуй еще раз!'
                     )
                 except e.AmountError:
                     self.send_message(
                         user_id,
-                        'У тебя нет столько энергетиков!',
-                        GO_BACK_KEYBOARD
+                        'У тебя нет столько энергетиков!'
                     )
         elif current_user.get_menu_mode() == 'need_help':
             if text == 'Я помог':
@@ -411,9 +410,8 @@ class Adrenaline_bot:
             if text == 'Моя статистика':
                 self.send_message(
                     user_id,
-                    f'{current_user.get_user_name()}, '
-                    f'Вы совершили {current_user.get_number_of_deals()} сделок, '
-                    f'преобретя {current_user.get_energy_amount()} энергетиков!'
+                    f'Сделок совершено: {current_user.get_number_of_deals()}\n'
+                    f'Энергетиков преобретено: {current_user.get_energy_amount()}'
                 )
             elif text == 'Купить энергетики':
                 current_user.set_menu_mode('cart')
@@ -459,6 +457,7 @@ class Adrenaline_bot:
                 )
             elif text == 'Назад':
                 current_user.set_menu_mode('main')
+                self.save_clients()
                 self.send_message(
                     user_id,
                     'Возвращаюсь назад...',
@@ -504,7 +503,7 @@ class Adrenaline_bot:
                 self.send_message(
                     user_id,
                     f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
-                    'Чтобы перевести деньги на счёт Тинькофф, перейдите по ссылке: '
+                    'Чтобы перевести деньги на счёт Тинькофф, перейдите по ссылке: \n'
                     f'{PAY_URL}',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
@@ -513,9 +512,9 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
-                    'Номер карты Сбербанк: 1234 1234 1234 1234'
-                    'Перевод по номеру телефона: +7(900)123-45-67',
+                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. \n'
+                    'Номер карты Сбербанк:\n1234 1234 1234 1234\n'
+                    'Перевод по номеру телефона:\n+7(900)123-45-67',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
             elif text == 'Переводом на карту Тинькофф':
@@ -523,9 +522,9 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
-                    'Номер карты Тинькофф: 4321 4321 4321 4321'
-                    'Перевод по номеру телефона: +7(900)123-45-67',
+                    f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. \n'
+                    'Номер карты Тинькофф:\n4321 4321 4321 4321\n'
+                    'Перевод по номеру телефона:\n+7(900)123-45-67',
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
             elif text == 'Оплачу наличными при получении':
@@ -536,7 +535,7 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    'Возвращаюсь назад...!',
+                    'Возвращаюсь назад...',
                     CLIENT_CART_KEYBOARD
                 )
             else:
@@ -558,7 +557,8 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    'Заказ отменен!'
+                    'Заказ отменен!',
+                    CLIENT_MAIN_MENU_KEYBOARD
                 )
             else:
                 self.send_message(
@@ -570,9 +570,10 @@ class Adrenaline_bot:
                 self.client_order_done(current_user)
             elif text == 'Назад':
                 current_user.set_menu_mode('payment_method')
+                self.save_clients()
                 self.send_message(
                     user_id,
-                    'Возращюсь назад...',
+                    'Возвращаюсь назад...',
                     CLIENT_PAYMENT_METHOD_KEYBOARD
                 )
             else:
@@ -583,11 +584,13 @@ class Adrenaline_bot:
         elif current_user.get_menu_mode() == 'order_done':
             if text == 'Я получил заказ':
                 current_user.set_menu_mode('main')
+                current_user.new_deal(current_user.get_current_order().get_energy_amount())
                 current_user.get_current_order().clear_order()
+                self.save_clients()
                 self.send_message(
                     user_id,
                     'Спасибо, что выбираете нас! '
-                    'Мы будем очень рады если Вы оставите отзыв! '
+                    'Мы будем очень рады если Вы оставите отзыв: '
                     f'{FEEDBACK_URL}',
                     CLIENT_MAIN_MENU_KEYBOARD
                 )
@@ -612,7 +615,7 @@ class Adrenaline_bot:
     def find_free_admin(self, current_client):
         for i in range(len(self.admins)):
             current_admin = self.admins[i]
-            if current_admin.is_online() and \
+            if current_admin.get_online_status() and \
                     current_admin.get_energy_amount() >= \
                     current_client.get_current_order().get_energy_amount():
                 return current_admin
@@ -632,6 +635,8 @@ class Adrenaline_bot:
                 CLIENT_DELAY_KEYBOARD
             )
             for i in range(len(self.admins)):
+                self.admins[i].set_menu_mode('need_help')
+                self.save_admins()
                 self.send_message(
                     self.admins[i].get_user_id(),
                     f'Поступил новый заказ от @id{current_user.get_user_id()}. '

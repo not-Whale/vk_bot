@@ -13,7 +13,7 @@ class Admin:
     def get_room_number(self):
         return self.room_number
 
-    def is_online(self):
+    def get_online_status(self):
         return self.is_online
 
     def get_deals_list(self):

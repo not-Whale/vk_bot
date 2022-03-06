@@ -30,3 +30,7 @@ class Client:
 
     def set_menu_mode(self, menu_mode):
         self.menu_mode = menu_mode
+
+    def new_deal(self, energy_amount):
+        self.deals += 1
+        self.energy_amount += energy_amount

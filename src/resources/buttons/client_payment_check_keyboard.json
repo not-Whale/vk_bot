@@ -20,7 +20,7 @@
           "label": "Назад",
           "payload": "{\"button\": \"2\"}"
         },
-        "color": "positive"
+        "color": "negative"
       }
     ]
   ]

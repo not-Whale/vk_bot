@@ -13,6 +13,7 @@ MAX_INT = 2147483647
 LOPATA_ID = '448223022'
 PAY_URL = 'https://www.tinkoff.ru/rm/kravchenko.danila5/Nbfxk55061/'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
+FEEDBACK_URL = 'https://vk.com/adrenaline_ebelke_raskazambusi?w=wall-210973828_1'
 VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
 
 ADMIN_MAIN_MENU_KEYBOARD = rj.read_json('admin_main_keyboard')
@@ -45,7 +46,8 @@ KEYBOARDS = {
     'client_payment_check': CLIENT_PAYMENT_CHECK_KEYBOARD,
     'client_payment_method': CLIENT_PAYMENT_METHOD_KEYBOARD,
     'client_go_back': GO_BACK_KEYBOARD,
-    'admin_go_back': GO_BACK_KEYBOARD,
+    'admin_delivery': GO_BACK_KEYBOARD,
+    'admin_new_deal': GO_BACK_KEYBOARD,
     'admin_main': ADMIN_MAIN_MENU_KEYBOARD,
     'admin_need_help': ADMIN_NEED_HELP_KEYBOARD
 }
@@ -59,11 +61,6 @@ def print_error(error_message):
     print('\033[31mError! Message:')
     print(error_message)
     print('\033[0m')
-
-
-# issue 18
-def find_free_admin():
-    return None
 
 
 class Adrenaline_bot:
@@ -171,18 +168,25 @@ class Adrenaline_bot:
         for i in range(len(self.clients)):
             self.send_message(
                 self.clients[i].get_user_id(),
-                'Бот был перезапущен!',
+                'Бот был перезапущен, '
+                'Вы были возвращены на посленднюю точку взаимодействия с ним!',
                 KEYBOARDS['client_' + self.clients[i].get_menu_mode()]
             )
 
     # установка последней активной клавиатуры для клиента
     def set_admins_actual_keyboard(self):
         for i in range(len(self.admins)):
-            self.send_message(
-                self.admins[i].get_user_id(),
-                'Бот был перезапущен!',
-                KEYBOARDS['admin_' + self.admins[i].get_menu_mode()]
-            )
+            if self.admins[i].get_menu_mode() != 'start':
+                self.send_message(
+                    self.admins[i].get_user_id(),
+                    'Бот был перезапущен!',
+                    KEYBOARDS['admin_' + self.admins[i].get_menu_mode()]
+                )
+            else:
+                self.send_message(
+                    self.admins[i].get_user_id(),
+                    'Напиши "Начать", чтобы перезапустить бота'
+                )
 
     # написать в чатик
     def send_message(self, user_id, message, keyboard=''):
@@ -232,7 +236,21 @@ class Adrenaline_bot:
             if str(user_id) == self.admins[i].get_user_id():
                 current_user = self.admins[i]
                 break
-        if current_user.get_menu_mode() == 'main':
+        if current_user.get_menu_mode() == 'start':
+            if text == 'Начать':
+                current_user.set_menu_mode('main')
+                self.save_admins()
+                self.send_message(
+                    user_id,
+                    'Поехали!',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+            else:
+                self.send_message(
+                    user_id,
+                    'Чтобы запустить бота напиши "Начать"'
+                )
+        elif current_user.get_menu_mode() == 'main':
             if text == 'На связи':
                 current_user.set_online()
                 self.send_message(
@@ -252,6 +270,7 @@ class Adrenaline_bot:
                 )
             elif text == 'Новый завоз':
                 current_user.set_menu_mode('delivery')
+                self.save_admins()
                 self.send_message(
                     user_id,
                     'Сколько энергетиков сейчас на руках?',
@@ -259,6 +278,7 @@ class Adrenaline_bot:
                 )
             elif text == 'Новая сделка':
                 current_user.set_menu_mode('new_deal')
+                self.save_admins()
                 self.send_message(
                     user_id,
                     'Сколько энергетиков продано?',
@@ -273,6 +293,7 @@ class Adrenaline_bot:
         elif current_user.get_menu_mode() == 'delivery':
             if text == 'Назад':
                 current_user.set_menu_mode('main')
+                self.save_admins()
                 self.send_message(
                     user_id,
                     'Возвращаюсь назад...',
@@ -285,6 +306,7 @@ class Adrenaline_bot:
                         raise e.AmountError
                     current_user.set_menu_mode('main')
                     current_user.set_energy_amount(energy_amount)
+                    self.save_admins()
                     self.send_message(
                         user_id,
                         'У тебя теперь ' + str(energy_amount) + ' энергетиков!',
@@ -303,6 +325,7 @@ class Adrenaline_bot:
         elif current_user.get_menu_mode() == 'new_deal':
             if text == 'Назад':
                 current_user.set_menu_mode('main')
+                self.save_admins()
                 self.send_message(
                     user_id,
                     'Возвращаюсь назад...',
@@ -319,6 +342,7 @@ class Adrenaline_bot:
                     current_user.set_energy_amount(new_energy_amount)
                     if sold > 0:
                         current_user.new_deal([sold, time])
+                    self.save_admins()
                     self.send_message(
                         user_id,
                         'У тебя теперь ' + str(new_energy_amount) + ' энергетиков!',
@@ -336,23 +360,31 @@ class Adrenaline_bot:
                         'У тебя нет столько энергетиков!',
                         GO_BACK_KEYBOARD
                     )
-        elif current_user.get_menu_mode() == 'start':
-            if text == 'Начать':
+        elif current_user.get_menu_mode() == 'need_help':
+            if text == 'Я помог':
                 current_user.set_menu_mode('main')
+                self.save_admins()
                 self.send_message(
                     user_id,
-                    'Поехали!',
+                    'Отлично, не забудь внести сделку в базу!',
+                    ADMIN_MAIN_MENU_KEYBOARD
+                )
+            elif text == 'Назад':
+                current_user.set_menu_mode('main')
+                self.save_admins()
+                self.send_message(
+                    user_id,
+                    'Жалко этого добряка...',
                     ADMIN_MAIN_MENU_KEYBOARD
                 )
             else:
                 self.send_message(
                     user_id,
-                    'Чтобы запустить бота напиши "Начать"'
+                    'Ты помог человеку или его уже не спасти?'
                 )
 
     # если пишет покупатель
     def new_client_message(self, user_id, first_name, text):
-        # current_user = None
         for i in range(len(self.clients)):
             if user_id == self.clients[i].get_user_id():
                 current_user = self.clients[i]
@@ -364,6 +396,7 @@ class Adrenaline_bot:
         if current_user.get_menu_mode() == 'start':
             if text == 'Начать':
                 current_user.set_menu_mode('main')
+                self.save_clients()
                 self.send_message(
                     user_id,
                     'Поехали!',
@@ -384,6 +417,7 @@ class Adrenaline_bot:
                 )
             elif text == 'Купить энергетики':
                 current_user.set_menu_mode('cart')
+                self.save_clients()
                 self.send_message(
                     user_id,
                     'Сколько энергетиков Вам нужно?',
@@ -393,9 +427,9 @@ class Adrenaline_bot:
                 link = self.vk_session.method('users.get', values={'user_ids': f'{LOPATA_ID}'})[0]['id']
                 self.send_message(
                     user_id,
-                    'Если хочешь обсудить возможность сотрудничества, '
+                    'Если хотите обсудить возможность сотрудничества, '
                     'получения скидки или просто поговорить с Лопатусом), '
-                    f'пиши [id{link}|сюда]!'
+                    f'пишите [id{link}|сюда]!'
                 )
             else:
                 self.send_message(
@@ -405,18 +439,19 @@ class Adrenaline_bot:
         elif current_user.get_menu_mode() == 'cart':
             if text == '1':
                 current_user.get_current_order().set_energy_amount(1)
-                self.check_free_admin(current_user)
+                self.get_free_admin_and_continue(current_user)
             elif text == '2':
                 current_user.get_current_order().set_energy_amount(2)
-                self.check_free_admin(current_user)
+                self.get_free_admin_and_continue(current_user)
             elif text == '3':
                 current_user.get_current_order().set_energy_amount(3)
-                self.check_free_admin(current_user)
+                self.get_free_admin_and_continue(current_user)
             elif text == '4':
                 current_user.get_current_order().set_energy_amount(4)
-                self.check_free_admin(current_user)
+                self.get_free_admin_and_continue(current_user)
             elif text == 'Хочу больше!':
                 current_user.set_menu_mode('big_order')
+                self.save_clients()
                 self.send_message(
                     user_id,
                     'Сколько энергетиков Вы хотите купить?',
@@ -441,10 +476,11 @@ class Adrenaline_bot:
                     raise e.AmountError
                 else:
                     current_user.get_current_order().set_energy_amount(amount)
-                    self.check_free_admin(current_user)
+                    self.get_free_admin_and_continue(current_user)
             except ValueError:
                 if text == 'Назад':
                     current_user.set_menu_mode('cart')
+                    self.save_clients()
                     self.send_message(
                         user_id,
                         'Возращаюсь назад...',
@@ -464,6 +500,7 @@ class Adrenaline_bot:
         elif current_user.get_menu_mode() == 'payment_method':
             if text == 'Переводом на Тинькофф по ссылке':
                 current_user.set_menu_mode('payment_check')
+                self.save_clients()
                 self.send_message(
                     user_id,
                     f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
@@ -473,6 +510,7 @@ class Adrenaline_bot:
                 )
             elif text == 'Переводом на карту Сбербанка':
                 current_user.set_menu_mode('payment_check')
+                self.save_clients()
                 self.send_message(
                     user_id,
                     f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
@@ -482,6 +520,7 @@ class Adrenaline_bot:
                 )
             elif text == 'Переводом на карту Тинькофф':
                 current_user.set_menu_mode('payment_check')
+                self.save_clients()
                 self.send_message(
                     user_id,
                     f'К оплате {current_user.get_current_order().get_energy_amount() * 65} рублей. '
@@ -490,32 +529,45 @@ class Adrenaline_bot:
                     CLIENT_PAYMENT_CHECK_KEYBOARD
                 )
             elif text == 'Оплачу наличными при получении':
-                self.send_order_done_message(current_user)
-            elif text == 'Отменить заказ':
+                self.client_order_done(current_user)
+            elif text == 'Назад':
                 current_user.get_current_order().clear_order()
-                current_user.set_menu_mode('main')
+                current_user.set_menu_mode('cart')
+                self.save_clients()
                 self.send_message(
                     user_id,
-                    'Заказ отменен!',
-                    CLIENT_MAIN_MENU_KEYBOARD
+                    'Возвращаюсь назад...!',
+                    CLIENT_CART_KEYBOARD
                 )
             else:
                 self.send_message(
                     user_id,
                     MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
                 )
-        # issue 16
         elif current_user.get_menu_mode() == 'admin_delay':
-            for i in range(len(self.admins)):
+            if text == 'Мне помогли':
+                current_user.set_menu_mode('payment_method')
+                self.save_clients()
                 self.send_message(
-                    self.admins[i].get_user_id(),
-                    f'Поступил новый заказ от @id{user_id}. '
-                    f'Ответь ему, как только появится время!!!',
-                    ADMIN_NEED_HELP_KEYBOARD
+                    user_id,
+                    'Выберите удобный способ оплаты...',
+                    CLIENT_PAYMENT_METHOD_KEYBOARD
+                )
+            elif text == 'Отменить заказ':
+                current_user.set_menu_mode('main')
+                self.save_clients()
+                self.send_message(
+                    user_id,
+                    'Заказ отменен!'
+                )
+            else:
+                self.send_message(
+                    user_id,
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
                 )
         elif current_user.get_menu_mode() == 'payment_check':
             if text == 'Оплата произведена':
-                self.send_order_done_message(current_user)
+                self.client_order_done(current_user)
             elif text == 'Назад':
                 current_user.set_menu_mode('payment_method')
                 self.send_message(
@@ -534,7 +586,9 @@ class Adrenaline_bot:
                 current_user.get_current_order().clear_order()
                 self.send_message(
                     user_id,
-                    'Спасибо, что выбираете нас!',
+                    'Спасибо, что выбираете нас! '
+                    'Мы будем очень рады если Вы оставите отзыв! '
+                    f'{FEEDBACK_URL}',
                     CLIENT_MAIN_MENU_KEYBOARD
                 )
             else:
@@ -543,8 +597,10 @@ class Adrenaline_bot:
                     MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
                 )
 
-    def send_order_done_message(self, current_user):
+    # переход к завершению заказа покупателем
+    def client_order_done(self, current_user):
         current_user.set_menu_mode('order_done')
+        self.save_clients()
         self.send_message(
             current_user.get_user_id(),
             f'Подходите в {current_user.get_current_order().get_admin().get_room_number()} '
@@ -552,20 +608,40 @@ class Adrenaline_bot:
             CLIENT_ORDER_DONE_KEYBOARD
         )
 
-    def check_free_admin(self, current_user):
-        free_admin = find_free_admin()
+    # поиск свободного админа с нужным количеством энергетиков
+    def find_free_admin(self, current_client):
+        for i in range(len(self.admins)):
+            current_admin = self.admins[i]
+            if current_admin.is_online() and \
+                    current_admin.get_energy_amount() >= \
+                    current_client.get_current_order().get_energy_amount():
+                return current_admin
+        return None
+
+    # проверка на админов онлайн
+    def get_free_admin_and_continue(self, current_user):
+        free_admin = self.find_free_admin(current_user)
         if free_admin is None:
             current_user.set_menu_mode('admin_delay')
+            self.save_clients()
             self.send_message(
                 current_user.get_user_id(),
                 'К сожалению, нас сейчас нет в общежитии или мы все спим. '
-                'Не нажимайте ничего, и мы свяжемся в вами. '
+                'Не нажимайте ничего, и мы свяжемся в вами (администраторам уже звонят!). '
                 'Либо Вы можете отменить заказ и попробовать еще раз позже.',
                 CLIENT_DELAY_KEYBOARD
             )
+            for i in range(len(self.admins)):
+                self.send_message(
+                    self.admins[i].get_user_id(),
+                    f'Поступил новый заказ от @id{current_user.get_user_id()}. '
+                    f'Ответь ему, как только появится время!!!',
+                    ADMIN_NEED_HELP_KEYBOARD
+                )
         else:
             current_user.set_menu_mode('payment_method')
             current_user.get_current_order().set_admin(free_admin)
+            self.save_clients()
             self.send_message(
                 current_user.get_user_id(),
                 'Выберите удобный способ оплаты...',

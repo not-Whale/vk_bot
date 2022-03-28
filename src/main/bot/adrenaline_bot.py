@@ -197,6 +197,25 @@ class Adrenaline_bot:
         else:
             self.new_client_message(user_id, first_name, text)
 
+    # определение админа после его сообщения
+    def define_admin_from_message(self, user_id):
+        for i in range(len(self.admins)):
+            if str(user_id) == self.admins[i].get_user_id():
+                return self.admins[i]
+        else:
+            return None
+
+    # определение клиента после его сообщения
+    def define_client_from_message(self, first_name, user_id):
+        for i in range(len(self.clients)):
+            if user_id == self.clients[i].get_user_id():
+                return self.clients[i]
+        else:
+            current_user = Client(user_id, first_name)
+            self.clients.append(current_user)
+            self.save_clients()
+            return current_user
+
     # если пишет админ
     def new_admin_message(self, user_id, time, text):
         current_user = self.define_admin_from_message(user_id)
@@ -335,24 +354,30 @@ class Adrenaline_bot:
                     'Ты помог человеку или его уже не спасти?'
                 )
 
-    # определение админа после его сообщения
-    def define_admin_from_message(self, user_id):
-        for i in range(len(self.admins)):
-            if str(user_id) == self.admins[i].get_user_id():
-                return self.admins[i]
-        else:
-            return None
-
-    # определение клиента после его сообщения
-    def define_client_from_message(self, first_name, user_id):
-        for i in range(len(self.clients)):
-            if user_id == self.clients[i].get_user_id():
-                return self.clients[i]
-        else:
-            current_user = Client(user_id, first_name)
-            self.clients.append(current_user)
-            self.save_clients()
-            return current_user
+    # оповещение админа(-ов) о действиях клиента
+    def note_new_client_action(self, current_client, current_admin=None):
+        if current_client.get_menu_mode() == 'main':
+            for admin in self.admins:
+                self.send_message(
+                    admin.get_user_id(),
+                    f'[id{current_client.get_user_id()}|{current_client.get_user_name()}] запустил бота!'
+                )
+        elif current_client.get_menu_mode() == 'cart':
+            for admin in self.admins:
+                self.send_message(
+                    admin.get_user_id(),
+                    f'[id{current_client.get_user_id()}|{current_client.get_user_name()}] хочет сделать заказ!'
+                )
+        elif current_client.get_menu_mode() == 'payment_check':
+            self.send_message(
+                current_admin.get_user_id(),
+                f'[id{current_client.get_user_id()}|{current_client.get_user_name()}] заплатил!'
+            )
+        elif current_client.get_menu_mode() == 'order_done':
+            self.send_message(
+                current_admin.get_user_id(),
+                f'[id{current_client.get_user_id()}|{current_client.get_user_name()}] направляется к тебе!'
+            )
 
     # если пишет покупатель
     def new_client_message(self, user_id, first_name, text):
@@ -366,6 +391,7 @@ class Adrenaline_bot:
                     'Поехали!',
                     CLIENT_MAIN_MENU_KEYBOARD
                 )
+                self.note_new_client_action(current_user)
             else:
                 self.send_message(
                     user_id,
@@ -386,6 +412,7 @@ class Adrenaline_bot:
                     'Сколько энергетиков Вам нужно?',
                     CLIENT_CART_KEYBOARD
                 )
+                self.note_new_client_action(current_user)
             elif text == 'Хочу сотрудничать':
                 link = self.vk_session.method('users.get', values={'user_ids': f'{LOPATA_ID}'})[0]['id']
                 self.send_message(
@@ -543,6 +570,7 @@ class Adrenaline_bot:
         elif current_user.get_menu_mode() == 'payment_check':
             if text == 'Оплата произведена':
                 self.client_order_done(current_user)
+                self.note_new_client_action(current_user, current_user.get_current_order().get_admin())
             elif text == 'Назад':
                 current_user.set_menu_mode('payment_method')
                 self.save_clients()
@@ -557,6 +585,7 @@ class Adrenaline_bot:
                     MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
                 )
         elif current_user.get_menu_mode() == 'order_done':
+            self.note_new_client_action(current_user, current_user.get_current_order().get_admin())
             if text == 'Я получил заказ':
                 current_user.set_menu_mode('main')
                 current_user.new_deal(current_user.get_current_order().get_energy_amount())
@@ -610,15 +639,7 @@ class Adrenaline_bot:
                 'Либо Вы можете отменить заказ и попробовать еще раз позже.',
                 CLIENT_DELAY_KEYBOARD
             )
-            for i in range(len(self.admins)):
-                self.admins[i].set_menu_mode('need_help')
-                self.save_admins()
-                self.send_message(
-                    self.admins[i].get_user_id(),
-                    f'Поступил новый заказ от @id{current_user.get_user_id()}. '
-                    f'Ответь ему, как только появится время!!!',
-                    ADMIN_NEED_HELP_KEYBOARD
-                )
+            self.note_admins_about_new_delay(current_user)
         else:
             current_user.set_menu_mode('payment_method')
             current_user.get_current_order().set_admin(free_admin)
@@ -627,6 +648,18 @@ class Adrenaline_bot:
                 current_user.get_user_id(),
                 'Выберите удобный способ оплаты...',
                 CLIENT_PAYMENT_METHOD_KEYBOARD
+            )
+
+    # отправка админам сообщения, что поступил заказ и их ожидают
+    def note_admins_about_new_delay(self, current_user):
+        for i in range(len(self.admins)):
+            self.admins[i].set_menu_mode('need_help')
+            self.save_admins()
+            self.send_message(
+                self.admins[i].get_user_id(),
+                f'Поступил новый заказ от @id{current_user.get_user_id()}. '
+                f'Ответь ему, как только появится время!!!',
+                ADMIN_NEED_HELP_KEYBOARD
             )
 
     # добавление id админа в список

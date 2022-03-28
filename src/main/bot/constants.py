@@ -4,17 +4,9 @@ MAX_INT = 2147483647
 ONE_ENERGY_DRINK_PRICE = 65
 
 LOPATA_ID = '448223022'
-SBERBANK_CARD_NUMBER = '1234 1234 1234 1234'
-TINKOFF_CARD_NUMBER = '4321 4321 4321 4321'
-TELEPHONE_FOR_PAYMENT = '+7(912)345-67-89'
 
-PAY_URL = 'https://www.tinkoff.ru/rm/kravchenko.danila5/Nbfxk55061/'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
 FEEDBACK_URL = 'https://vk.com/adrenaline_ebelke_raskazambusi?w=wall-210973828_1'
-
-VK_TOKEN = 'f8d3e63fa555d25cb165f67626537b4f2eb1fd5ae397db5c216051a8683ac2ac51b84732e6ce69ca88ca8'
-VK_LOGIN = 'your_login'
-VK_PASSWORD = 'your_password'
 
 CLIENTS_PICKLE_PATH = '../resources/users/clients.pickle'
 ADMINS_PICKLE_PATH = '../resources/users/admins.pickle'

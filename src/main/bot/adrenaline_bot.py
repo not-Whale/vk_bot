@@ -5,9 +5,34 @@ import requests
 import time as t
 from random import randint
 from src.main.bot.constants import *
+from src.main.bot.open_keys import *
 from src.main.user.client import Client
 from src.main.bot.errors import AmountError
 from src.main.bot.utility_funcs import format_input, print_error
+
+
+# обработка получения энергетиков админом
+def handle_admin_delivery_and_get_energy_amount(current_user, text):
+    energy_amount = int(text)
+    if energy_amount < 0:
+        raise AmountError
+    current_user.set_menu_mode('main')
+    current_user.set_energy_amount(energy_amount)
+    return str(energy_amount)
+
+
+# обработка заключения новой сделки админом
+def handle_admin_new_deal_and_get_energy_amount(current_user, text, time):
+    sold = int(text)
+    energy_amount = current_user.get_energy_amount()
+    if sold > energy_amount or sold < 1:
+        raise AmountError
+    current_user.set_menu_mode('main')
+    new_energy_amount = energy_amount - sold
+    current_user.set_energy_amount(new_energy_amount)
+    if sold > 0:
+        current_user.new_deal([sold, time])
+    return str(new_energy_amount)
 
 
 class Adrenaline_bot:
@@ -174,12 +199,8 @@ class Adrenaline_bot:
 
     # если пишет админ
     def new_admin_message(self, user_id, time, text):
-        for i in range(len(self.admins)):
-            if str(user_id) == self.admins[i].get_user_id():
-                current_user = self.admins[i]
-                break
-        else:
-            current_user = None
+        current_user = self.define_admin_from_message(user_id)
+        if current_user is None:
             print_error('Админа не найдено в списке!')
             exit(1)
         if current_user.get_menu_mode() == 'start':
@@ -246,15 +267,11 @@ class Adrenaline_bot:
                 )
             else:
                 try:
-                    energy_amount = int(text)
-                    if energy_amount < 0:
-                        raise AmountError
-                    current_user.set_menu_mode('main')
-                    current_user.set_energy_amount(energy_amount)
+                    energy_amount = handle_admin_delivery_and_get_energy_amount(current_user, text)
                     self.save_admins()
                     self.send_message(
                         user_id,
-                        'У тебя теперь ' + str(energy_amount) + ' энергетиков!',
+                        'У тебя теперь ' + energy_amount + ' энергетиков!',
                         ADMIN_MAIN_MENU_KEYBOARD
                     )
                 except ValueError:
@@ -278,19 +295,11 @@ class Adrenaline_bot:
                 )
             else:
                 try:
-                    sold = int(text)
-                    energy_amount = current_user.get_energy_amount()
-                    if sold > energy_amount or sold < 1:
-                        raise AmountError
-                    current_user.set_menu_mode('main')
-                    new_energy_amount = energy_amount - sold
-                    current_user.set_energy_amount(new_energy_amount)
-                    if sold > 0:
-                        current_user.new_deal([sold, time])
+                    new_energy_amount = handle_admin_new_deal_and_get_energy_amount(current_user, text, time)
                     self.save_admins()
                     self.send_message(
                         user_id,
-                        'У тебя теперь ' + str(new_energy_amount) + ' энергетиков!',
+                        'У тебя теперь ' + new_energy_amount + ' энергетиков!',
                         ADMIN_MAIN_MENU_KEYBOARD
                     )
                 except ValueError:
@@ -326,16 +335,28 @@ class Adrenaline_bot:
                     'Ты помог человеку или его уже не спасти?'
                 )
 
-    # если пишет покупатель
-    def new_client_message(self, user_id, first_name, text):
+    # определение админа после его сообщения
+    def define_admin_from_message(self, user_id):
+        for i in range(len(self.admins)):
+            if str(user_id) == self.admins[i].get_user_id():
+                return self.admins[i]
+        else:
+            return None
+
+    # определение клиента после его сообщения
+    def define_client_from_message(self, first_name, user_id):
         for i in range(len(self.clients)):
             if user_id == self.clients[i].get_user_id():
-                current_user = self.clients[i]
-                break
+                return self.clients[i]
         else:
             current_user = Client(user_id, first_name)
             self.clients.append(current_user)
             self.save_clients()
+            return current_user
+
+    # если пишет покупатель
+    def new_client_message(self, user_id, first_name, text):
+        current_user = self.define_client_from_message(first_name, user_id)
         if current_user.get_menu_mode() == 'start':
             if text == 'Начать':
                 current_user.set_menu_mode('main')
@@ -369,7 +390,7 @@ class Adrenaline_bot:
                 link = self.vk_session.method('users.get', values={'user_ids': f'{LOPATA_ID}'})[0]['id']
                 self.send_message(
                     user_id,
-                    'Если хотите обсудить возможность сотрудничества, '
+                    'Если Вы хотите обсудить возможность сотрудничества, '
                     'получения скидки или просто поговорить с Лопатусом), '
                     f'пишите [id{link}|сюда]!'
                 )
@@ -446,7 +467,9 @@ class Adrenaline_bot:
                 self.save_clients()
                 self.send_message(
                     user_id,
-                    f'К оплате {current_user.get_current_order().get_energy_amount() * ONE_ENERGY_DRINK_PRICE} рублей. '
+                    f'К оплате '
+                    f'{current_user.get_current_order().get_energy_amount() * ONE_ENERGY_DRINK_PRICE} '
+                    f'рублей. '
                     'Чтобы перевести деньги на счёт Тинькофф, перейдите по ссылке: \n'
                     f'{PAY_URL}',
                     CLIENT_PAYMENT_CHECK_KEYBOARD

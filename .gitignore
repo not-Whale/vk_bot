@@ -133,3 +133,6 @@ dmypy.json
 
 # clients and admins list
 src/resources/users/
+
+# open keys
+src/main/bot/open_keys.py

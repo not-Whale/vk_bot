@@ -11,8 +11,18 @@ from src.main.bot.errors import AmountError
 from src.main.bot.utility_funcs import format_input, print_error
 
 
-# обработка получения энергетиков админом
 def handle_admin_delivery_and_get_energy_amount(current_user, text):
+    """
+    Выделение количества энергетиков на завозе.
+
+    Внимание! Меняет значения полей menu_mode, energy_amount экземпляра
+    current_user класса Admin.
+
+    :param current_user: объект админа
+    :param text: текст сообщения
+    :raise AmountError: в случае если число введено некорректно
+    :return: количество энерегтиков после завоза
+    """
     energy_amount = int(text)
     if energy_amount < 0:
         raise AmountError
@@ -23,6 +33,18 @@ def handle_admin_delivery_and_get_energy_amount(current_user, text):
 
 # обработка заключения новой сделки админом
 def handle_admin_new_deal_and_get_energy_amount(current_user, text, time):
+    """
+    Выделение количества энергетиков после сделки.
+
+    Внимание! Меняет значения полей menu_mode, energy_amount, deals
+    экземпляра current_user класса Admin.
+
+    :param current_user: объект админа
+    :param text: текст сообщения
+    :param time: время отправки сообщения
+    :raise AmountError: в случае если число введено некорректно
+    :return: количество энергетиков после совершения сделки
+    """
     sold = int(text)
     energy_amount = current_user.get_energy_amount()
     if sold > energy_amount or sold < 1:
@@ -36,6 +58,7 @@ def handle_admin_new_deal_and_get_energy_amount(current_user, text, time):
 
 
 class Adrenaline_bot:
+    """Бот для обработки сообщений в личных сообщениях сообщества или страницы вк."""
     def __init__(self):
         # объект сессии авторизации
         self.vk_session = None
@@ -53,8 +76,14 @@ class Adrenaline_bot:
         self.load_clients()
         self.load_admins()
 
-    # слушатель кода двухфакторки
     def auth_handler(self):
+        """
+        Слушатель кода двухфакторной аутентификации.
+
+        Внимание! Меняет значение полей auth_code, remember_code.
+
+        :return:
+        """
         self.auth_code = input('Введите код аутентификации...')
         while True:
             remember_device = format_input(input('Запомнить пользователя? (yes/no)'))
@@ -66,8 +95,17 @@ class Adrenaline_bot:
                 break
             print('Неверный формат ввода!')
 
-    # авторизация пользователя
     def login_as_user(self):
+        """
+        Авторизация в качестве пользователя.
+
+        Метод используется в случае, если происходит авторизация аккаунта
+        без двухфакторной аутентификации, иначе вызывается метод login_as_user_two_factor.
+
+        Внимание! Меняет значение поля vk_session.
+
+        :return:
+        """
         self.vk_session = vk_api.VkApi(
             VK_LOGIN, VK_PASSWORD
         )
@@ -80,21 +118,33 @@ class Adrenaline_bot:
             print_error(error_message)
             self.vk_session = None
 
-    # авторизация пользователя с двухфакторкой
     def login_as_user_two_factor(self):
+        """
+        Авторизация в качестве пользователя (с двухфакторной аутентификацией).
+
+        Внимание! Меняет значение поля vk_session.
+
+        :return:
+        """
         self.vk_session = vk_api.VkApi(
             VK_LOGIN, VK_PASSWORD,
             auth_handler=self.auth_handler
         )
         try:
             self.vk_session.auth()
-            print('Двухфакторная авторизация пользователя успешна!')
+            print('Двухфакторная аутентификация пользователя прошла успешно!')
         except vk_api.AuthError as error_message:
             print_error(error_message)
             self.vk_session = None
 
-    # авторизация как сообщество
     def login_as_group(self):
+        """
+        Авторизация в качестве сообщества (используется в актуальной версии).
+
+        Внимание! Меняет значение поля vk_session.
+
+        :return:
+        """
         try:
             self.vk_session = vk_api.VkApi(token=VK_TOKEN)
             print('Авторизация сообщества успешна!')
@@ -105,34 +155,62 @@ class Adrenaline_bot:
             print_error(error_message)
             self.vk_session = None
 
-    # сохранение списка клиентов
     def save_clients(self):
+        """
+        Сохранение списка клиентов в pickle-файл.
+
+        :return:
+        """
         with open(CLIENTS_PICKLE_PATH, 'wb') as clients_list:
             pickle.dump(self.clients, clients_list)
         clients_list.close()
 
-    # сохранение списка админов
     def save_admins(self):
+        """
+        Сохранение списка админов в pickle-файл.
+
+        :return:
+        """
         with open(ADMINS_PICKLE_PATH, 'wb') as admins_list:
             pickle.dump(self.admins, admins_list)
         admins_list.close()
 
-    # загрузка списка клиентов
     def load_clients(self):
+        """
+        Загрузка списка клиентов из pickle-файла.
+
+        Внимание! Меняет значение поля clients.
+
+        :return:
+        """
         if os.path.exists(CLIENTS_PICKLE_PATH):
             with open(CLIENTS_PICKLE_PATH, 'rb') as clients_list:
                 self.clients = pickle.load(clients_list)
             clients_list.close()
 
-    # загрузка списка админов
     def load_admins(self):
+        """
+        Загрузка списка админов из pickle-файла.
+
+        Внимание! Меняет значение поля admins.
+
+        :return:
+        """
         if os.path.exists(ADMINS_PICKLE_PATH):
             with open(ADMINS_PICKLE_PATH, 'rb') as admins_list:
                 self.admins = pickle.load(admins_list)
             admins_list.close()
 
-    # установка последней активной клавиатуры для админа
     def set_clients_actual_keyboard(self):
+        """
+        Установка последней активной клавиатуры для клиента.
+
+        Метод отправляет сообщение каждому клиенту, который ранее писал боту,
+        с оповещением о том, что бот был перезапущен, и возвращает последнюю
+        актуальную клавиатуру.
+
+        :return:
+        """
         for i in range(len(self.clients)):
             self.send_message(
                 self.clients[i].get_user_id(),
@@ -141,8 +219,17 @@ class Adrenaline_bot:
                 KEYBOARDS['client_' + self.clients[i].get_menu_mode()]
             )
 
-    # установка последней активной клавиатуры для клиента
     def set_admins_actual_keyboard(self):
+        """
+        Установка последней активной для админа.
+
+        Метод отправляет сообщение каждому админу в списке админов, сообщая
+        о том, что бот был перезапущен, если админ уже пользовался ботом ранее,
+        либо с сообщением о том, что нужно запустить бота, если админ добавлен
+        в список, но еще не пользовался ботом.
+
+        :return:
+        """
         for i in range(len(self.admins)):
             if self.admins[i].get_menu_mode() != 'start':
                 self.send_message(
@@ -156,29 +243,52 @@ class Adrenaline_bot:
                     'Напиши "Начать", чтобы перезапустить бота'
                 )
 
-    # написать в чатик
     def send_message(self, user_id, message, keyboard=''):
+        """
+        Отправка сообщения в чат.
+
+        :param user_id: индивидуальный номер диалога
+        :param message: сообщение, которое необходимо отправить
+        :param keyboard: строковое представление json-клавиатуры, defaults to ''
+        :return:
+        """
         if keyboard == '':
             values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT)}
         else:
             values = {'user_id': user_id, 'message': message, 'random_id': randint(0, MAX_INT), 'keyboard': keyboard}
         self.vk_session.method('messages.send', values=values)
 
-    # получить информацию об имени пользователя
     def get_username(self, user_id):
-        response = self.vk_session.method('users.get', {'user_ids': user_id})[0]
-        return [response['first_name'], response['last_name']]
+        """
+        Определение имени пользователя по его id.
 
-    # инициализировать LongPoll
+        :param user_id: id пользователя вк
+        :returns: имя и фамилия пользователя
+        """
+        response = self.vk_session.method('users.get', {'user_ids': user_id})[0]
+        return response['first_name'], response['last_name']
+
     def set_long_poll_server_params(self):
+        """
+        Инициализация LongPoll-сервера для получения сообщений.
+
+        Внимание! Меняет значения полей long_poll_server, long_poll_key,
+        long_poll_ts.
+
+        :return:
+        """
         values = {'lp_version': 3}
         long_poll = self.vk_session.method('messages.getLongPollServer', values=values)
         self.long_poll_server = long_poll['server']
         self.long_poll_key = long_poll['key']
         self.long_poll_ts = long_poll['ts']
 
-    # get запрос к LongPoll
     def get_response(self):
+        """
+        Отправка get-запроса к LongPoll-серверу и получение ответа
+
+        :return: ответ LongPoll-сервера
+        """
         data = requests.get('https://{server}?act=a_check&key={key}&ts={ts}&wait=25&mode=2&version=2'.format(
             server=self.long_poll_server,
             key=self.long_poll_key,
@@ -187,26 +297,58 @@ class Adrenaline_bot:
 
     # заполнение списка id админов
     def fill_admin_list(self):
+        """
+        Заполнение списка id админов в случае.
+
+        Метод предназначен для восстановления списка id админов в случае перезапуска
+        бота и последующего восстановления списка админов из pickle-файла.
+
+        Внимание! Изменяет значение глобальной переменной ADMIN_LIST.
+
+        :return:
+        """
         for i in range(len(self.admins)):
             ADMIN_LIST.append(self.admins[i].get_user_id())
 
-    # обработчик входящего сообщения
     def new_message(self, user_id, first_name, time, text):
+        """
+        Определение отправителя и дальнейшая обработка входящего сообщения.
+
+        Метод определяет тип отправителя: клиент или админ, после чего вызывает
+        соответствующий метод (либо new_admin_message, либо new_client_message).
+
+        :param user_id: индивидуальный номер диалога
+        :param first_name: имя отправителя сообщения
+        :param time: время отправления сообщения
+        :param text: текст сообщения
+        :return:
+        """
         if str(user_id) in ADMIN_LIST:
             self.new_admin_message(user_id, time, text)
         else:
             self.new_client_message(user_id, first_name, text)
 
-    # определение админа после его сообщения
     def define_admin_from_message(self, user_id):
+        """
+        Нахождения объекта админа по его id вк.
+
+        :param user_id: id пользователя вк
+        :return: объект админа либо None
+        """
         for i in range(len(self.admins)):
             if str(user_id) == self.admins[i].get_user_id():
                 return self.admins[i]
         else:
             return None
 
-    # определение клиента после его сообщения
     def define_client_from_message(self, first_name, user_id):
+        """
+        Нахождение существующего объекта клиента по его id вк либо добавление нового.
+
+        :param first_name: имя клиента (используется для инициализации нового объекта)
+        :param user_id: id пользователя вк
+        :return: объект клиента
+        """
         for i in range(len(self.clients)):
             if user_id == self.clients[i].get_user_id():
                 return self.clients[i]
@@ -216,8 +358,22 @@ class Adrenaline_bot:
             self.save_clients()
             return current_user
 
-    # если пишет админ
     def new_admin_message(self, user_id, time, text):
+        """
+        Обработка сообщения от админа.
+
+        Метод определяет объект отправителя сообщения, после чего обрабатывает
+        входящее сообщение в зависимости от его фактического положения в меню
+        клавиатур.
+
+        Внимание! Меняет значения полей menu_mode, is_online, energy amount,
+        deals экземпляра current_user класса Admin.
+
+        :param user_id: индивидуальный номер диалога
+        :param time: время отправки сообщения
+        :param text: текст сообщения
+        :return:
+        """
         current_user = self.define_admin_from_message(user_id)
         if current_user is None:
             print_error('Админа не найдено в списке!')
@@ -354,8 +510,14 @@ class Adrenaline_bot:
                     'Ты помог человеку или его уже не спасти?'
                 )
 
-    # оповещение админа(-ов) о действиях клиента
     def note_new_client_action(self, current_client, current_admin=None):
+        """
+        Отправка сообщений админам о ключевых действиях клиента.
+
+        :param current_client: объект клиента
+        :param current_admin: объект админа (если он уже привязан к клиенту)
+        :return:
+        """
         if current_client.get_menu_mode() == 'main':
             for admin in self.admins:
                 self.send_message(
@@ -379,8 +541,22 @@ class Adrenaline_bot:
                 f'[id{current_client.get_user_id()}|{current_client.get_user_name()}] направляется к тебе!'
             )
 
-    # если пишет покупатель
     def new_client_message(self, user_id, first_name, text):
+        """
+        Обработка сообщения от клиента.
+
+        Метод определяет объект отправителя сообщения, после чего обрабатывает
+        входящее сообщение в зависимости от его фактического положения в меню
+        клавиатур.
+
+        Внимание! Меняет значения полей menu_mode, energy amount, deals,
+        current_order экземпляра current_user класса Client.
+
+        :param user_id: индивидуальный номер диалога
+        :param first_name: имя отправителя
+        :param text: текст сообщения
+        :return:
+        """
         current_user = self.define_client_from_message(first_name, user_id)
         if current_user.get_menu_mode() == 'start':
             if text == 'Начать':
@@ -429,16 +605,16 @@ class Adrenaline_bot:
         elif current_user.get_menu_mode() == 'cart':
             if text == '1':
                 current_user.get_current_order().set_energy_amount(1)
-                self.get_free_admin_and_continue(current_user)
+                self.find_free_admin_and_continue(current_user)
             elif text == '2':
                 current_user.get_current_order().set_energy_amount(2)
-                self.get_free_admin_and_continue(current_user)
+                self.find_free_admin_and_continue(current_user)
             elif text == '3':
                 current_user.get_current_order().set_energy_amount(3)
-                self.get_free_admin_and_continue(current_user)
+                self.find_free_admin_and_continue(current_user)
             elif text == '4':
                 current_user.get_current_order().set_energy_amount(4)
-                self.get_free_admin_and_continue(current_user)
+                self.find_free_admin_and_continue(current_user)
             elif text == 'Хочу больше!':
                 current_user.set_menu_mode('big_order')
                 self.save_clients()
@@ -467,7 +643,7 @@ class Adrenaline_bot:
                     raise AmountError
                 else:
                     current_user.get_current_order().set_energy_amount(amount)
-                    self.get_free_admin_and_continue(current_user)
+                    self.find_free_admin_and_continue(current_user)
             except ValueError:
                 if text == 'Назад':
                     current_user.set_menu_mode('cart')
@@ -604,8 +780,16 @@ class Adrenaline_bot:
                     MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
                 )
 
-    # переход к завершению заказа покупателем
     def client_order_done(self, current_user):
+        """
+        Переход к стадии получения заказа в случае оплаты наличными.
+
+        Внимание! Меняет значение поля menu_mode экземпляра current_user
+        класса Client.
+
+        :param current_user: объект клиента
+        :return:
+        """
         current_user.set_menu_mode('order_done')
         self.save_clients()
         self.send_message(
@@ -616,8 +800,13 @@ class Adrenaline_bot:
             CLIENT_ORDER_DONE_KEYBOARD
         )
 
-    # поиск свободного админа с нужным количеством энергетиков
-    def find_free_admin(self, current_client):
+    def get_free_admin(self, current_client):
+        """
+        Поиск свободного админа с нужным количеством энергетиков.
+
+        :param current_client: объект клиента
+        :return: объект искомого админа
+        """
         for i in range(len(self.admins)):
             current_admin = self.admins[i]
             if current_admin.get_online_status() and \
@@ -626,9 +815,21 @@ class Adrenaline_bot:
                 return current_admin
         return None
 
-    # проверка на админов онлайн
-    def get_free_admin_and_continue(self, current_user):
-        free_admin = self.find_free_admin(current_user)
+    def find_free_admin_and_continue(self, current_user):
+        """
+        Проверка на наличие свободных админов и оповещение клиента о дальнейших дейсвтиях.
+
+        Метод совершает поиск свободного админа. В случае положительного результата,
+        клиенту отправляется инструкция о дальнейших действиях (куда подойти и забрать
+        свой заказ), в противном случае отправляется сообщение о том, что можно подождать,
+        пока кто-то из админов освободится, либо отменить свой заказ.
+
+        Внимание! Меняет поле menu_mode экземпляра current_user класса Client.
+
+        :param current_user: объект клиента
+        :return:
+        """
+        free_admin = self.get_free_admin(current_user)
         if free_admin is None:
             current_user.set_menu_mode('admin_delay')
             self.save_clients()
@@ -652,6 +853,15 @@ class Adrenaline_bot:
 
     # отправка админам сообщения, что поступил заказ и их ожидают
     def note_admins_about_new_delay(self, current_user):
+        """
+        Оповещение админов об ожидании обработки нового заказа.
+
+        Внимание! Меняет значение поле menu_mode экземляров класса Admins
+        из списка админов - поля admins.
+
+        :param current_user: объект клиента
+        :return:
+        """
         for i in range(len(self.admins)):
             self.admins[i].set_menu_mode('need_help')
             self.save_admins()
@@ -662,12 +872,24 @@ class Adrenaline_bot:
                 ADMIN_NEED_HELP_KEYBOARD
             )
 
-    # добавление id админа в список
     def add_new_admin(self, admin_obj):
+        """
+        Добавление админа в список.
+
+        Внимание! Меняет значение поля admins.
+
+        :param admin_obj: объект админа
+        :return:
+        """
         self.admins.append(admin_obj)
         self.save_admins()
 
     def start_bot(self):
+        """
+        Инициализация и запуск бота.
+
+        :return:
+        """
         # авторизация сообщества
         self.login_as_group()
         if self.vk_session is None:
@@ -694,16 +916,12 @@ class Adrenaline_bot:
                     # набор текста пользователем
                     if action_code == 61:
                         user_id = update[1]
-                        username = self.get_username(user_id)
-                        first_name = username[0]
-                        second_name = username[1]
+                        first_name, second_name = self.get_username(user_id)
                         print(first_name + ' ' + second_name + ' печатает...')
                     # новое сообщение в диалоге
                     elif action_code == 4:
                         user_id = update[3]
-                        username = self.get_username(user_id)
-                        first_name = username[0]
-                        second_name = username[1]
+                        first_name, second_name = self.get_username(user_id)
                         flags = update[2]
                         time = update[4]
                         text = update[5]

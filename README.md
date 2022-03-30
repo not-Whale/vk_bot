@@ -54,6 +54,7 @@ git clone https://github.com/not-Whale/vk_bot
 bot.add_new_admin(Admin(%user_id%, %room_number%, ...))
 ```
 С полный списком параметров и описанием работы каждой функции бота можно ознакомиться, обратившись к [документации](https://github.com/not-Whale/vk_bot/docs);  
+
 5. Установите любую версию python 3.x.x c [официального сайта](https://www.python.org/downloads/), если она еще не установлена;
 6. Запустите скрипт бота:  
 ```
@@ -67,6 +68,7 @@ python src/main/main.py
 * [Vk_api](https://github.com/python273/vk_api) для python и их [документацией](https://vk-api.readthedocs.io/en/latest/);
 * [Документацией](https://vk.com/dev/methods) API от Вконтакте;
 * [Мотивационной статьей](https://habr.com/ru/post/427691/) на Хабре.  
+
 А также стандартами оформления кода и документации, поиск которых оставим в качестве домашнего задания!
 ***
 ### Связь с разработчиками

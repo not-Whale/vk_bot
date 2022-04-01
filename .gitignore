@@ -138,4 +138,4 @@ src/resources/users/
 src/main/bot/open_keys.py
 
 # documentation
-src/main/resources/docs
+src/resources/docs/

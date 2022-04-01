@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Документация vk_bot &#8212; документация vk_bot 0.1.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="Файл запуска main.py" href="main.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="vk-bot">
+<h1>Документация vk_bot<a class="headerlink" href="#vk-bot" title="Ссылка на этот заголовок">¶</a></h1>
+<p>vk_bot - бот для продажи энергетиков в студенческом общежитии, подключаемый к сообществу</p>
+<section id="id1">
+<h2>Установка и запуск<a class="headerlink" href="#id1" title="Ссылка на этот заголовок">¶</a></h2>
+<p>Для быстрой установки и запуска проекта:</p>
+<ol class="arabic">
+<li><p>Склонируйте репозиторий в папку на персональном компьютере:</p>
+<div class="highlight-shell-session notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>git clone https://github.com/not-Whale/vk_bot
+</pre></div>
+</div>
+</li>
+<li><p>Создайте в директории <strong>src/main/bot</strong> файл <strong>open_keys.py</strong>;</p></li>
+<li><p>Задайте в созданном файле следующие обязательные строковые переменные:</p>
+<ul class="simple">
+<li><p>SBERBANK_CARD_NUMBER - номер карты Сбербанк для оплаты;</p></li>
+<li><p>TINKOFF_CARD_NUMBER - номер карты Тинькофф для оплаты;</p></li>
+<li><p>TELEPHONE_FOR_PAYMENT - номер телефона для переводов;</p></li>
+<li><p>PAY_URL - ссылка на перевод через платежную систему (мы использовали платежи Тинькофф);</p></li>
+<li><p>VK_TOKEN - токен для авторизации в качестве сообщества;</p></li>
+<li><p>VK_LOGIN - логин админа (если авторизация планируется не через токен)</p></li>
+<li><p>VK_PASSWORD - пароль админа (если авторизация планируется не через токен);</p></li>
+</ul>
+</li>
+<li><p>Отредактируйте файл <strong>src/main/main.py</strong> под свои нужны. Например:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">src.main.bot.adrenaline_bot</span> <span class="kn">import</span> <span class="n">Adrenaline_bot</span>
+<span class="kn">from</span> <span class="nn">src.main.user.admin</span> <span class="kn">import</span> <span class="n">Admin</span>
+
+<span class="n">bot</span> <span class="o">=</span> <span class="n">Adrenaline_bot</span><span class="p">()</span>
+<span class="n">bot</span><span class="o">.</span><span class="n">add_new_admin</span><span class="p">(</span>
+   <span class="n">Admin</span><span class="p">(</span>
+      <span class="s1">&#39;user_id&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;room_number&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;sberbank_card&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;tinkoff_card&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;telephone_number&#39;</span>
+   <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">bot</span><span class="o">.</span><span class="n">start_bot</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Примеры настройки бота можно посмотреть в разделе <a class="reference external" href="examples.html">Примеры</a> или на Github (ССЫЛКА).</p>
+</section>
+<section id="id3">
+<h2>Навигация<a class="headerlink" href="#id3" title="Ссылка на этот заголовок">¶</a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Файл запуска main.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="main.html#id1">Пример 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html#id2">Пример 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bot.html">Реализация бота</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bot.html#adrenaline-bot">Adrenaline_bot (основной класс)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bot.html#id2">Функции-обработчики</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bot.html#id3">Вспомогательные функции</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="users.html">Файлы классов доступа</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="users.html#admin">Admin (класс для продавцов)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html#client">Client (класс для клиентов)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users.html#order">Order (класс заказа клиента)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Примеры использования бота</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#id2">Введение</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#id4">Что можно сделать перед запуском бота?</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="#">
+    <img class="logo" src="_static/main logo 1000 x 1000.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=not-Whale&repo=vk_bot&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Файл запуска main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot.html">Реализация бота</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users.html">Файлы классов доступа</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Примеры использования бота</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="main.html" title="следующая глава">Файл запуска main.py</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Быстрый поиск</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Nikita Rezepin.
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/not-Whale/vk_bot" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

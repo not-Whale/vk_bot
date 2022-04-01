@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Файлы классов доступа &#8212; документация vk_bot 0.1.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="Примеры использования бота" href="examples.html" />
+    <link rel="prev" title="Реализация бота" href="bot.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>Файлы классов доступа<a class="headerlink" href="#id1" title="Ссылка на этот заголовок">¶</a></h1>
+<section id="admin">
+<h2>Admin (класс для продавцов)<a class="headerlink" href="#admin" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Admin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Admin</span></span><a class="headerlink" href="#Admin" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Класс админа для бота.</p>
+<p><strong>Атрибуты:</strong></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.user_id">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.user_id" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Индивидуальный идентификатор - id страницы пользователя Вконтакте.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.room_number">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">room_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.room_number" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Номер комнаты.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.menu_mode">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">menu_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.menu_mode" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Текущее положение админа в меню (название клавиатуры).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.sberbank_card">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">sberbank_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.sberbank_card" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Номер карты Сбербанк для оплаты.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.tinkoff_card">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">tinkoff_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.tinkoff_card" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Номер карты Тинькофф для оплаты.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.telephone_number">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">telephone_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.telephone_number" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Номер телефона, привязанный к мобильному банку, для перевода.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Количество энергетиков в наличии.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.is_online">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">is_online</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.is_online" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Статус в сети.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Admin.self.deals">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">deals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">[int,</span> <span class="pre">datetime][]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.deals" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Массив проведенных сделок в формате: [количество энерегетиков, время сделки].</p>
+</dd></dl>
+
+<p><strong>Методы:</strong></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_user_id">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_user_id" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля user_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Индивидуальный идентификатор - id страницы пользователя Вконтакте.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_room_number">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_room_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_room_number" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля room_number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Номер комнаты.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_online_status">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_online_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_online_status" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля is_online.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Статус в сети.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_deals_list">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_deals_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_deals_list" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля deals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Массив проведенных сделок в формате: [количество энерегетиков, время сделки].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_menu_mode">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_menu_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_menu_mode" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля menu_mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Текущее положение админа в меню (название клавиатуры).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля energy_amount.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Количество энергетиков в наличии.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_sberbank_card">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_sberbank_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_sberbank_card" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля sberbank_card.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Номер карты Сбербанк для оплаты.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_tinkoff_card">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_tinkoff_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_tinkoff_card" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля tinkoff_card.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Номер карты Тинькофф для оплаты.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.get_telephone_number">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_telephone_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.get_telephone_number" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля telephone_number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Номер телефона, привязанный к мобильному банку, для перевода.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.set_online">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_online</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.set_online" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Изменение статуса админа на online.
+Меняет значение поля <em>is_online</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.set_offline">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_offline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.set_offline" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Изменение статуса админа на offline.
+Меняет значение поля <em>is_online</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.set_menu_mode">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_menu_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">menu_mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.set_menu_mode" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Установка положения в меню.
+Меняет значение поля <em>menu_mode</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>menu_mode</strong> (<em>str</em>) – Новое положение админа в меню.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.set_energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.set_energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Установка количества энерегетиков.
+Меняет значение поля <em>energy_amount</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>amount</strong> (<em>int</em>) – Новое количество энерегетиков.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Admin.self.new_deal">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">new_deal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deal</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Admin.self.new_deal" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Добавление новой сделки.
+Меняет значение поля <em>deals</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>deal</strong> (<em>[</em><em>int</em><em>, </em><em>datetime</em><em>]</em>) – Новая сделка.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="client">
+<h2>Client (класс для клиентов)<a class="headerlink" href="#client" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Client">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Client</span></span><a class="headerlink" href="#Client" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Класс клиента для бота.</p>
+<p><strong>Атрибуты:</strong></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Client.self.user_id">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.user_id" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Индивидуальный идентификатор - id страницы пользователя Вконтакте.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Client.self.name">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.name" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Имя пользователя.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Client.self.menu_mode">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">menu_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.menu_mode" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Текущее положение клиента в меню (название клавиатуры).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Client.self.deals">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">deals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.deals" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Количество совершенных сделок.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Client.self.energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Количество купленных энерегетиков.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Client.self.current_order">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">current_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src.main.user.order.Order</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.current_order" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Объект текущего заказа.</p>
+</dd></dl>
+
+<p><strong>Методы:</strong></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.get_user_id">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.get_user_id" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля user_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Индивидуальный идентификатор - id страницы пользователя Вконтакте.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.get_menu_mode">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_menu_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.get_menu_mode" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля menu_mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Текущее положение клиента в меню (название клавиатуры).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.get_number_of_deals">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_number_of_deals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.get_number_of_deals" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля deals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Количество совершенных сделок.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.get_user_name">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_user_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.get_user_name" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Имя пользователя.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.get_energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.get_energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля energy_amount.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Количество купленных энерегетиков.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.get_current_order">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_current_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.get_current_order" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля current_order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Объект текущего заказа.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.set_menu_mode">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_menu_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">menu_mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.set_menu_mode" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Установка положения в меню.
+Меняет значение поля <em>menu_mode</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>menu_mode</strong> (<em>str</em>) – Новое положение клиента в меню.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Client.self.new_deal">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">new_deal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_amount</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Client.self.new_deal" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Добавление новой сделки.
+Меняет значения полей <em>deals</em>, <em>energy_amount</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>energy_amount</strong> (<em>int</em>) – Количество купленных энергетиков.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="order">
+<h2>Order (класс заказа клиента)<a class="headerlink" href="#order" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Order">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Order</span></span><a class="headerlink" href="#Order" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Класс заказа клиента.</p>
+<p><strong>Атрибуты:</strong></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Order.self.client_id">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">client_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.client_id" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Индивидуальный идентификатор клиента - id страницы пользователя Вконтакте.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Order.self.energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Количество энергетиков в заказе.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Order.self.admin">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">admin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src.main.user.admin.Admin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.admin" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Объект админа, привязанного к заказу.</p>
+</dd></dl>
+
+<p><strong>Методы:</strong></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Order.self.set_energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy_amount</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.set_energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Установка количества заказанных энерегетиков.
+Меняет значение поля <em>energy_amount</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>energy_amount</strong> (<em>int</em>) – Количество энерегетиков в заказе.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Order.self.set_admin">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_admin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.set_admin" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Установка привязанного к заказу админа.
+Меняет значение поле <em>admin</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>admin</strong> (<em>src.main.user.admin.Admin</em>) – Объект админа, привязываемого к заказу.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Order.self.get_admin">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_admin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.get_admin" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значения поля admin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Объект админа, привязанного к заказу.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Order.self.get_energy_amount">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.get_energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Получение значение поля energy_amount.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>Количество энерегетиков в заказе.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Order.self.clear_order">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">clear_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Order.self.clear_order" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Удаление заказа.
+Меняет значение полей <em>energy_amount</em>, <em>admin</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/main logo 1000 x 1000.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=not-Whale&repo=vk_bot&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Файл запуска main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bot.html">Реализация бота</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Файлы классов доступа</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#admin">Admin (класс для продавцов)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client">Client (класс для клиентов)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#order">Order (класс заказа клиента)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Примеры использования бота</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="bot.html" title="предыдущая глава">Реализация бота</a></li>
+      <li>Next: <a href="examples.html" title="следующая глава">Примеры использования бота</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Быстрый поиск</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Nikita Rezepin.
+      
+      |
+      <a href="_sources/users.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/not-Whale/vk_bot" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

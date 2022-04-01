@@ -1,0 +1,595 @@
+
+<!DOCTYPE html>
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Реализация бота &#8212; документация vk_bot 0.1.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="next" title="Файлы классов доступа" href="users.html" />
+    <link rel="prev" title="Файл запуска main.py" href="main.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>Реализация бота<a class="headerlink" href="#id1" title="Ссылка на этот заголовок">¶</a></h1>
+<section id="adrenaline-bot">
+<h2>Adrenaline_bot (основной класс)<a class="headerlink" href="#adrenaline-bot" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Adrenaline_bot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Adrenaline_bot</span></span><a class="headerlink" href="#Adrenaline_bot" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Бот для обработки сообщений в личных сообщениях
+сообщества или страницы вк.</p>
+<p><strong>Атрибуты:</strong></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.vk_session">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">vk_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk_api.VkApi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.vk_session" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Объект сессии авторизации (возможна авторизация
+как пользователь либо как сообщество).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.long_poll_server">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">long_poll_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.long_poll_server" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Адрес LongPoll сервера (используется для обращения к серверу для получения сообщений).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.long_poll_key">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">long_poll_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.long_poll_key" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Секретный ключ сессии (используется для обращения к серверу для получения сообщений).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.long_poll_ts">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">long_poll_ts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.long_poll_ts" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Номер последнего события, начиная с которого нужно
+получать данные (используется для обращения к серверу
+для получения сообщений).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.auth_code">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">auth_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.auth_code" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Код для двухфакторной аутентификации.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.remember_code">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">remember_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boolean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.remember_code" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Статус запоминания авторизирации (для двухфакторной аутентификации).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.admins">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">admins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src.main.user.admin.Admin[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.admins" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Список админов (используется для отображения отдельного меню для админов).
+Список либо загружается из admins.pickle в случае наличия файла, либо
+пополняется с помощью метода <em>add_new_admin()</em>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.clients">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">clients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src.main.user.client.Client[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.clients" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Список клиентов (используется для отображения отдельного меню для клиентов).
+Список либо загружается из clients.pickle в случае наличия файла, либо
+пополняется новыми клиентами после получения первых сообщений от них.</p>
+</dd></dl>
+
+<p><strong>Методы:</strong></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.auth_handler">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">auth_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.auth_handler" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Слушатель кода двухфакторной аутентификации.
+Меняет значение полей <em>auth_code</em>, <em>remember_code</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.login_as_user">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">login_as_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.login_as_user" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Авторизация в качестве пользователя. Метод используется в случае, если
+происходит авторизация аккаунта без двухфакторной аутентификации, иначе
+вызывается метод <em>login_as_user_two_factor()</em>.
+Меняет значение поля <em>vk_session</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.login_as_user_two_factor">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">login_as_user_two_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.login_as_user_two_factor" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Авторизация в качестве пользователя (с двухфакторной аутентификацией).
+Меняет значение поля <em>vk_session</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.login_as_group">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">login_as_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.login_as_group" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Авторизация в качестве сообщества (используется в актуальной версии).
+Меняет значение поля <em>vk_session</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.save_clients">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">save_clients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.save_clients" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Сохранение списка клиентов в pickle-файл.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.save_admins">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">save_admins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.save_admins" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Сохранение списка админов в pickle-файл.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.load_clients">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">load_clients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.load_clients" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Загрузка списка клиентов из pickle-файла.
+Меняет значение поля <em>clients</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.load_admins">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">load_admins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.load_admins" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Загрузка списка админов из pickle-файла.
+Меняет значение поля <em>admins</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.set_clients_actual_keyboard">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_clients_actual_keyboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.set_clients_actual_keyboard" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Установка последней активной клавиатуры для клиента. Метод отправляет
+сообщение каждому клиенту, который ранее писал боту, с оповещением о
+том, что бот был перезапущен, и возвращает последнюю актуальную клавиатуру.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.set_admins_actual_keyboard">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_admins_actual_keyboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.set_admins_actual_keyboard" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Установка последней активной для админа. Метод отправляет сообщение
+каждому админу в списке админов, сообщая о том, что бот был перезапущен,
+если админ уже пользовался ботом ранее, либо с сообщением о том, что
+нужно запустить бота, если админ добавлен в список, но еще не пользовался ботом.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.send_message">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyboard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.send_message" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Отправка сообщения в чат.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>str</em>) – индивидуальный номер диалога</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – сообщение, которое необходимо отправить</p></li>
+<li><p><strong>keyboard</strong> (<em>str</em>) – строковое представление json-клавиатуры</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.get_username">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.get_username" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Определение имени пользователя по его id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>user_id</strong> (<em>str</em>) – id пользователя вк</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>имя пользователя, фамилия пользователя</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.set_long_poll_server_params">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">set_long_poll_server_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.set_long_poll_server_params" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Инициализация LongPoll-сервера для получения сообщений.
+Меняет значения полей <em>long_poll_server</em>, <em>long_poll_key</em>,
+<em>long_poll_ts</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.get_response">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.get_response" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Отправка get-запроса к LongPoll-серверу и получение ответа</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>ответ LongPoll-сервера</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.fill_admin_list">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">fill_admin_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.fill_admin_list" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Заполнение списка id админов в случае перезапуска бота.
+Метод предназначен для восстановления списка id админов в случае перезапуска
+бота и последующего восстановления списка админов из pickle-файла.
+Меняет значение глобальной переменной <em>ADMIN_LIST</em>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.new_message">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">new_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.new_message" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Определение отправителя и дальнейшая обработка входящего сообщения.
+Метод определяет тип отправителя: клиент или админ, после чего вызывает
+соответствующий метод (либо <em>new_admin_message()</em>, либо <em>new_client_message()</em>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>str</em>) – индивидуальный номер диалога</p></li>
+<li><p><strong>first_name</strong> (<em>str</em>) – имя отправителя сообщения</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) – время отправления сообщения</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – текст сообщения</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.define_admin_from_message">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">define_admin_from_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.define_admin_from_message" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Нахождения объекта админа по его id вк.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>user_id</strong> (<em>str</em>) – id пользователя вк</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>объект админа либо None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.define_client_from_message">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">define_client_from_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.define_client_from_message" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Нахождение существующего объекта клиента по его id вк либо добавление нового.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first_name</strong> (<em>str</em>) – имя клиента (используется для инициализации нового объекта)</p></li>
+<li><p><strong>user_id</strong> (<em>str</em>) – id пользователя вк</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>объект клиента</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.new_admin_message">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">new_admin_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.new_admin_message" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Обработка сообщения от админа.
+Метод определяет объект отправителя сообщения, после чего обрабатывает
+входящее сообщение в зависимости от его фактического положения в меню
+клавиатур.
+Меняет значения полей <em>menu_mode</em>, <em>is_online</em>, <em>energy amount</em>,
+<em>deals</em> экземпляра <em>current_user</em> класса <em>src.main.user.Admin</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>str</em>) – индивидуальный номер диалога</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) – время отправки сообщения</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – текст сообщения</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.note_new_client_action">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">note_new_client_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.note_new_client_action" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Отправка сообщений админам о ключевых действиях клиента.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_client</strong> (<em>src.main.user.client.Client</em>) – объект клиента</p></li>
+<li><p><strong>current_admin</strong> (<em>src.main.user.admin.Admin</em>) – объект админа (если он уже привязан к клиенту)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.new_client_message">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">new_client_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.new_client_message" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Обработка сообщения от клиента.
+Метод определяет объект отправителя сообщения, после чего обрабатывает
+входящее сообщение в зависимости от его фактического положения в меню
+клавиатур.
+Меняет значения полей <em>menu_mode</em>, <em>energy amount</em>, <em>deals</em>,
+<em>current_order</em> экземпляра <em>current_user</em> класса <em>src.main.user.client.Client</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>str</em>) – индивидуальный номер диалога</p></li>
+<li><p><strong>first_name</strong> (<em>str</em>) – имя отправителя</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – текст сообщения</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.client_order_done">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">client_order_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.client_order_done" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Переход к стадии получения заказа в случае оплаты наличными.
+Меняет значение поля <em>menu_mode</em> экземпляра <em>current_user</em>
+класса <em>src.main.user.client.Client</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>current_user</strong> (<em>src.main.user.client.Client</em>) – объект клиента</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.get_free_admin">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">get_free_admin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.get_free_admin" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Поиск свободного админа с нужным количеством энергетиков.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>current_client</strong> (<em>src.main.user.client.Client</em>) – объект клиента</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>объект искомого админа</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.find_free_admin_and_continue">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">find_free_admin_and_continue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.find_free_admin_and_continue" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Проверка на наличие свободных админов и оповещение клиента о дальнейших дейсвтиях.
+Метод совершает поиск свободного админа. В случае положительного результата,
+клиенту отправляется инструкция о дальнейших действиях (куда подойти и забрать
+свой заказ), в противном случае отправляется сообщение о том, что можно подождать,
+пока кто-то из админов освободится, либо отменить свой заказ.
+Меняет поле <em>menu_mode</em> экземпляра <em>current_user</em> класса <em>src.main.user.client.Client</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>current_user</strong> (<em>src.main.user.client.Client</em>) – объект клиента</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.note_admins_about_new_delay">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">note_admins_about_new_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.note_admins_about_new_delay" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Оповещение админов об ожидании обработки нового заказа.
+Меняет значение поле <em>menu_mode</em> экземляров класса <em>src.main.user.admin.Admins</em>
+из списка админов - поля <em>admins</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>current_user</strong> (<em>src.main.user.client.Client</em>) – объект клиента</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.add_new_admin">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">add_new_admin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.add_new_admin" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Добавление админа в список.
+Меняет значение поля <em>admins</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>admin_obj</strong> (<em>src.main.user.admin.Admin</em>) – объект админа</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Adrenaline_bot.self.start_bot">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">start_bot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Adrenaline_bot.self.start_bot" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Инициализация и запуск бота.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="id2">
+<h2>Функции-обработчики<a class="headerlink" href="#id2" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="handle_admin_delivery_and_get_energy_amount">
+<span class="sig-name descname"><span class="pre">handle_admin_delivery_and_get_energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#handle_admin_delivery_and_get_energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Выделение количества энергетиков на завозе.
+Меняет значения полей <em>menu_mode</em>, <em>energy_amount</em> экземпляра
+<em>current_user</em> класса <em>src.main.user.admin.Admin</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_user</strong> (<em>src.main.user.admin.Admin</em>) – объект админа</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – текст сообщения</p></li>
+</ul>
+</dd>
+<dt class="field-even">Исключение</dt>
+<dd class="field-even"><p><strong>src.main.bot.errors.AmountError</strong> – в случае если число введено некорректно</p>
+</dd>
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>количество энерегтиков после завоза</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="handle_admin_new_deal_and_get_energy_amount">
+<span class="sig-name descname"><span class="pre">handle_admin_new_deal_and_get_energy_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#handle_admin_new_deal_and_get_energy_amount" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Выделение количества энергетиков после сделки.
+Меняет значения полей <em>menu_mode</em>, <em>energy_amount</em>, <em>deals</em>
+экземпляра <em>current_user</em> класса <em>src.main.user.admin.Admin</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_user</strong> (<em>src.main.user.admin.Admin</em>) – объект админа</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – текст сообщения</p></li>
+<li><p><strong>time</strong> (<em>datetime</em>) – время отправки сообщения</p></li>
+</ul>
+</dd>
+<dt class="field-even">Исключение</dt>
+<dd class="field-even"><p><strong>src.main.bot.errors.AmountError</strong> – в случае если число введено некорректно</p>
+</dd>
+<dt class="field-odd">Результат</dt>
+<dd class="field-odd"><p>количество энергетиков после совершения сделки</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id3">
+<h2>Вспомогательные функции<a class="headerlink" href="#id3" title="Ссылка на этот заголовок">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="read_json">
+<span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#read_json" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Чтение json-клавиатуры из файла.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – путь к файлу</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>строковое представление клавиатуры</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="format_input">
+<span class="sig-name descname"><span class="pre">format_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#format_input" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Удаление пробелов из строки и приведение её к нижнему регистру.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>answer</strong> (<em>str</em>) – исходная строка</p>
+</dd>
+<dt class="field-even">Результат</dt>
+<dd class="field-even"><p>итоговая строка</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="print_error">
+<span class="sig-name descname"><span class="pre">print_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error_message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#print_error" title="Ссылка на это определение">¶</a></dt>
+<dd><p>Форматированный вывод ошибки.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры</dt>
+<dd class="field-odd"><p><strong>error_message</strong> (<em>str</em>) – текст ошибки</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/main logo 1000 x 1000.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=not-Whale&repo=vk_bot&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Навигация</h3>
+<p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Файл запуска main.py</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Реализация бота</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adrenaline-bot">Adrenaline_bot (основной класс)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Функции-обработчики</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Вспомогательные функции</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="users.html">Файлы классов доступа</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Примеры использования бота</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="main.html" title="предыдущая глава">Файл запуска main.py</a></li>
+      <li>Next: <a href="users.html" title="следующая глава">Файлы классов доступа</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Быстрый поиск</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Искать" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Nikita Rezepin.
+      
+      |
+      <a href="_sources/bot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/not-Whale/vk_bot" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

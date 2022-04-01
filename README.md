@@ -1,5 +1,5 @@
 ### vk_bot - бот для продажи энергетиков в студенческом общежитии!
-<img src="./src/resources/photos/main_logo.png" alt="logo" width="200px"/>
+<img src="./src/resources/photos/main logo 250x250.png" alt="logo"/>
 
 ***
 ### Немного истории
@@ -34,6 +34,7 @@
 * Калита Никита [[@ontoshenka](https://github.com/ontoshenka)] : научный руководитель
 * Поляков Данила [[@qqqq4u](https://github.com/qqqq4u)] : автор задумки, идейный вдохновитель
 * Кравченко Данила [[@228Danila228](https://github.com/228Danila228)] : автор задумки, талисман команды
+* Уксусов Егор [[@egkssv](https://vk.com/egkssv)] : дизайнер логотипа
 ***
 ### Инструкция по установке и запуску:
 1. Склонируйте репозиторий в папку на персональном компьютере:  
@@ -67,7 +68,8 @@ python src/main/main.py
 В процессе разработки я пользовался следующими *информационными* ресурсами:
 * [Vk_api](https://github.com/python273/vk_api) для python и их [документацией](https://vk-api.readthedocs.io/en/latest/);
 * [Документацией](https://vk.com/dev/methods) API от Вконтакте;
-* [Мотивационной статьей](https://habr.com/ru/post/427691/) на Хабре.  
+* [Мотивационной статьей](https://habr.com/ru/post/427691/) на Хабре;
+* [Документацией](https://sphinx-ru.readthedocs.io/ru/latest/sphinx.html) Sphinx.
 
 А также стандартами оформления кода и документации, поиск которых оставим в качестве домашнего задания!
 ***

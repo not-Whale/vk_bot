@@ -6,10 +6,10 @@
         "action":
         {
           "type": "text",
-          "label": "Вернуться в меню",
+          "label": "Я получил заказ",
           "payload": "{\"button\": \"1\"}"
         },
-        "color": "secondary"
+        "color": "positive"
       }
     ]
   ]

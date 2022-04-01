@@ -11,6 +11,16 @@
         },
         "color": "positive"
       }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Назад",
+          "payload": "{\"button\": \"1\"}"
+        },
+        "color": "negative"
+      }
     ]
   ]
 }

@@ -49,6 +49,17 @@
         },
         "color": "secondary"
       }
+    ],
+        [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Назад",
+          "payload": "{\"button\": \"6\"}"
+        },
+        "color": "negative"
+      }
     ]
   ]
 }

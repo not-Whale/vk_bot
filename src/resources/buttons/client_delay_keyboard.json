@@ -6,8 +6,19 @@
         "action":
         {
           "type": "text",
-          "label": "Отменить заказ",
+          "label": "Мне помогли",
           "payload": "{\"button\": \"1\"}"
+        },
+        "color": "positive"
+      }
+    ],
+    [
+      {
+        "action":
+        {
+          "type": "text",
+          "label": "Отменить заказ",
+          "payload": "{\"button\": \"2\"}"
         },
         "color": "negative"
       }

@@ -1,0 +1,327 @@
+Реализация бота
+===============
+
+Adrenaline_bot (основной класс)
+-------------------------------------
+
+.. py:class:: Adrenaline_bot
+
+    Бот для обработки сообщений в личных сообщениях
+    сообщества или страницы вк.
+
+    **Атрибуты:**
+
+    .. py:attribute:: self.vk_session(vk_api.VkApi)
+
+        Объект сессии авторизации (возможна авторизация
+        как пользователь либо как сообщество).
+
+    .. py:attribute:: self.long_poll_server(str)
+
+        Адрес LongPoll сервера (используется для обращения к серверу для получения сообщений).
+
+    .. py:attribute:: self.long_poll_key(str)
+
+        Секретный ключ сессии (используется для обращения к серверу для получения сообщений).
+
+    .. py:attribute:: self.long_poll_ts(str)
+
+        Номер последнего события, начиная с которого нужно
+        получать данные (используется для обращения к серверу
+        для получения сообщений).
+
+    .. py:attribute:: self.auth_code(str)
+
+        Код для двухфакторной аутентификации.
+
+    .. py:attribute:: self.remember_code(boolean)
+
+        Статус запоминания авторизирации (для двухфакторной аутентификации).
+
+    .. py:attribute:: self.admins(src.main.user.admin.Admin[])
+
+        Список админов (используется для отображения отдельного меню для админов).
+        Список либо загружается из admins.pickle в случае наличия файла, либо
+        пополняется с помощью метода *add_new_admin()*.
+
+    .. py:attribute:: self.clients(src.main.user.client.Client[])
+
+        Список клиентов (используется для отображения отдельного меню для клиентов).
+        Список либо загружается из clients.pickle в случае наличия файла, либо
+        пополняется новыми клиентами после получения первых сообщений от них.
+
+    **Методы:**
+
+    .. py:method:: self.auth_handler(self)
+
+        Слушатель кода двухфакторной аутентификации.
+        Меняет значение полей *auth_code*, *remember_code*.
+
+    .. py:method:: self.login_as_user(self)
+
+        Авторизация в качестве пользователя. Метод используется в случае, если
+        происходит авторизация аккаунта без двухфакторной аутентификации, иначе
+        вызывается метод *login_as_user_two_factor()*.
+        Меняет значение поля *vk_session*.
+
+    .. py:method:: self.login_as_user_two_factor(self)
+
+        Авторизация в качестве пользователя (с двухфакторной аутентификацией).
+        Меняет значение поля *vk_session*.
+
+    .. py:method:: self.login_as_group(self)
+
+        Авторизация в качестве сообщества (используется в актуальной версии).
+        Меняет значение поля *vk_session*.
+
+    .. py:method:: self.save_clients(self)
+
+        Сохранение списка клиентов в pickle-файл.
+
+    .. py:method:: self.save_admins(self)
+
+        Сохранение списка админов в pickle-файл.
+
+    .. py:method:: self.load_clients(self)
+
+        Загрузка списка клиентов из pickle-файла.
+        Меняет значение поля *clients*.
+
+    .. py:method:: self.load_admins(self)
+
+        Загрузка списка админов из pickle-файла.
+        Меняет значение поля *admins*.
+
+    .. py:method:: self.set_clients_actual_keyboard(self)
+
+        Установка последней активной клавиатуры для клиента. Метод отправляет
+        сообщение каждому клиенту, который ранее писал боту, с оповещением о
+        том, что бот был перезапущен, и возвращает последнюю актуальную клавиатуру.
+
+    .. py:method:: self.set_admins_actual_keyboard(self)
+
+        Установка последней активной для админа. Метод отправляет сообщение
+        каждому админу в списке админов, сообщая о том, что бот был перезапущен,
+        если админ уже пользовался ботом ранее, либо с сообщением о том, что
+        нужно запустить бота, если админ добавлен в список, но еще не пользовался ботом.
+
+    .. py:method:: self.send_message(user_id, message, keyboard='')
+
+        Отправка сообщения в чат.
+
+        :param user_id: индивидуальный номер диалога
+        :type user_id: str
+        :param message: сообщение, которое необходимо отправить
+        :type message: str
+        :param keyboard: строковое представление json-клавиатуры
+        :type keyboard: str
+
+    .. py:method:: self.get_username(self, user_id)
+
+        Определение имени пользователя по его id.
+
+        :param user_id: id пользователя вк
+        :type user_id: str
+        :returns: имя пользователя, фамилия пользователя
+
+    .. py:method:: self.set_long_poll_server_params()
+
+        Инициализация LongPoll-сервера для получения сообщений.
+        Меняет значения полей *long_poll_server*, *long_poll_key*,
+        *long_poll_ts*.
+
+    .. py:method:: self.get_response(self)
+
+        Отправка get-запроса к LongPoll-серверу и получение ответа
+
+        :return: ответ LongPoll-сервера
+
+    .. py:method:: self.fill_admin_list(self)
+
+        Заполнение списка id админов в случае перезапуска бота.
+        Метод предназначен для восстановления списка id админов в случае перезапуска
+        бота и последующего восстановления списка админов из pickle-файла.
+        Меняет значение глобальной переменной *ADMIN_LIST*.
+
+    .. py:method:: self.new_message(self, user_id, first_name, time, text)
+
+        Определение отправителя и дальнейшая обработка входящего сообщения.
+        Метод определяет тип отправителя: клиент или админ, после чего вызывает
+        соответствующий метод (либо *new_admin_message()*, либо *new_client_message()*).
+
+        :param user_id: индивидуальный номер диалога
+        :type user_id: str
+        :param first_name: имя отправителя сообщения
+        :type first_name: str
+        :param time: время отправления сообщения
+        :type time: datetime
+        :param text: текст сообщения
+        :type text: str
+
+    .. py:method:: self.define_admin_from_message(self, user_id)
+
+        Нахождения объекта админа по его id вк.
+
+        :param user_id: id пользователя вк
+        :type user_id: str
+        :return: объект админа либо None
+
+    .. py:method:: self.define_client_from_message(self, first_name, user_id)
+
+        Нахождение существующего объекта клиента по его id вк либо добавление нового.
+
+        :param first_name: имя клиента (используется для инициализации нового объекта)
+        :type first_name: str
+        :param user_id: id пользователя вк
+        :type user_id: str
+        :return: объект клиента
+
+    .. py:method:: self.new_admin_message(self, user_id, time, text)
+
+        Обработка сообщения от админа.
+        Метод определяет объект отправителя сообщения, после чего обрабатывает
+        входящее сообщение в зависимости от его фактического положения в меню
+        клавиатур.
+        Меняет значения полей *menu_mode*, *is_online*, *energy amount*,
+        *deals* экземпляра *current_user* класса *src.main.user.Admin*.
+
+        :param user_id: индивидуальный номер диалога
+        :type user_id: str
+        :param time: время отправки сообщения
+        :type time: datetime
+        :param text: текст сообщения
+        :type text: str
+
+    .. py:method:: self.note_new_client_action(self, current_client, current_admin=None)
+
+        Отправка сообщений админам о ключевых действиях клиента.
+
+        :param current_client: объект клиента
+        :type current_client: src.main.user.client.Client
+        :param current_admin: объект админа (если он уже привязан к клиенту)
+        :type current_admin: src.main.user.admin.Admin
+
+    .. py:method:: self.new_client_message(self, user_id, first_name, text)
+
+        Обработка сообщения от клиента.
+        Метод определяет объект отправителя сообщения, после чего обрабатывает
+        входящее сообщение в зависимости от его фактического положения в меню
+        клавиатур.
+        Меняет значения полей *menu_mode*, *energy amount*, *deals*,
+        *current_order* экземпляра *current_user* класса *src.main.user.client.Client*.
+
+        :param user_id: индивидуальный номер диалога
+        :type user_id: str
+        :param first_name: имя отправителя
+        :type first_name: str
+        :param text: текст сообщения
+        :type text: str
+
+    .. py:method:: self.client_order_done(self, current_user)
+
+        Переход к стадии получения заказа в случае оплаты наличными.
+        Меняет значение поля *menu_mode* экземпляра *current_user*
+        класса *src.main.user.client.Client*.
+
+        :param current_user: объект клиента
+        :type current_user: src.main.user.client.Client
+
+    .. py:method:: self.get_free_admin(self, current_client)
+
+        Поиск свободного админа с нужным количеством энергетиков.
+
+        :param current_client: объект клиента
+        :type current_client: src.main.user.client.Client
+        :return: объект искомого админа
+
+    .. py:method:: self.find_free_admin_and_continue(self, current_user)
+
+        Проверка на наличие свободных админов и оповещение клиента о дальнейших дейсвтиях.
+        Метод совершает поиск свободного админа. В случае положительного результата,
+        клиенту отправляется инструкция о дальнейших действиях (куда подойти и забрать
+        свой заказ), в противном случае отправляется сообщение о том, что можно подождать,
+        пока кто-то из админов освободится, либо отменить свой заказ.
+        Меняет поле *menu_mode* экземпляра *current_user* класса *src.main.user.client.Client*.
+
+        :param current_user: объект клиента
+        :type current_user: src.main.user.client.Client
+
+    .. py:method:: self.note_admins_about_new_delay(self, current_user)
+
+        Оповещение админов об ожидании обработки нового заказа.
+        Меняет значение поле *menu_mode* экземляров класса *src.main.user.admin.Admins*
+        из списка админов - поля *admins*.
+
+        :param current_user: объект клиента
+        :type current_user: src.main.user.client.Client
+
+    .. py:method:: self.add_new_admin(self, admin_obj)
+
+        Добавление админа в список.
+        Меняет значение поля *admins*.
+
+        :param admin_obj: объект админа
+        :type admin_obj: src.main.user.admin.Admin
+
+    .. py:method:: self.start_bot(self)
+
+        Инициализация и запуск бота.
+
+
+Функции-обработчики
+-------------------
+
+.. py:function:: handle_admin_delivery_and_get_energy_amount(current_user, text)
+
+    Выделение количества энергетиков на завозе.
+    Меняет значения полей *menu_mode*, *energy_amount* экземпляра
+    *current_user* класса *src.main.user.admin.Admin*.
+
+    :param current_user: объект админа
+    :type current_user: src.main.user.admin.Admin
+    :param text: текст сообщения
+    :type text: str
+    :raise src.main.bot.errors.AmountError: в случае если число введено некорректно
+    :return: количество энерегтиков после завоза
+
+.. py:function:: handle_admin_new_deal_and_get_energy_amount(current_user, text, time)
+
+    Выделение количества энергетиков после сделки.
+    Меняет значения полей *menu_mode*, *energy_amount*, *deals*
+    экземпляра *current_user* класса *src.main.user.admin.Admin*.
+
+    :param current_user: объект админа
+    :type current_user: src.main.user.admin.Admin
+    :param text: текст сообщения
+    :type text: str
+    :param time: время отправки сообщения
+    :type time: datetime
+    :raise src.main.bot.errors.AmountError: в случае если число введено некорректно
+    :return: количество энергетиков после совершения сделки
+
+
+Вспомогательные функции
+-----------------------
+
+.. py:function:: read_json(file_name)
+
+    Чтение json-клавиатуры из файла.
+
+    :param file_name: путь к файлу
+    :type file_name: str
+    :return: строковое представление клавиатуры
+
+.. py:function:: format_input(answer)
+
+    Удаление пробелов из строки и приведение её к нижнему регистру.
+
+    :param answer: исходная строка
+    :type answer: str
+    :return: итоговая строка
+
+.. py:function:: print_error(error_message)
+
+    Форматированный вывод ошибки.
+
+    :param error_message: текст ошибки
+    :type error_message: str

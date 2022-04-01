@@ -12,27 +12,27 @@ class Client:
         self.current_order = order.Order(client_id)
 
     def get_user_id(self):
-        """Получение значения поля user_id"""
+        """Получение значения поля user_id."""
         return self.user_id
 
     def get_menu_mode(self):
-        """Получение значения поля menu_mode"""
+        """Получение значения поля menu_mode."""
         return self.menu_mode
 
     def get_number_of_deals(self):
-        """Получение значения поля deals"""
+        """Получение значения поля deals."""
         return self.deals
 
     def get_user_name(self):
-        """Получение значения поля name"""
+        """Получение значения поля name."""
         return self.name
 
     def get_energy_amount(self):
-        """Получение значения поля energy_amount"""
+        """Получение значения поля energy_amount."""
         return self.energy_amount
 
     def get_current_order(self):
-        """Получение значения поля current_order"""
+        """Получение значения поля current_order."""
         return self.current_order
 
     def set_menu_mode(self, menu_mode):

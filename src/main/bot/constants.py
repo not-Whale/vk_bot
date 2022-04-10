@@ -8,6 +8,7 @@ LOPATA_ID = '448223022'
 LONG_POLL_SERVER_URL = 'https://api.vk.com/method/messages.getLongPollServer'
 FEEDBACK_URL = 'https://vk.com/adrenaline_ebelke_raskazambusi?w=wall-210973828_1'
 
+USER_RESOURCES_PATH = '../resources/users'
 CLIENTS_PICKLE_PATH = '../resources/users/clients.pickle'
 ADMINS_PICKLE_PATH = '../resources/users/admins.pickle'
 

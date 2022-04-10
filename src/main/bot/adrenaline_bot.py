@@ -31,7 +31,6 @@ def handle_admin_delivery_and_get_energy_amount(current_user, text):
     return str(energy_amount)
 
 
-# обработка заключения новой сделки админом
 def handle_admin_new_deal_and_get_energy_amount(current_user, text, time):
     """
     Выделение количества энергетиков после сделки.
@@ -55,6 +54,14 @@ def handle_admin_new_deal_and_get_energy_amount(current_user, text, time):
     if sold > 0:
         current_user.new_deal([sold, time])
     return str(new_energy_amount)
+
+
+def check_and_create_backup_directory():
+    """
+    Проверка на наличие и в случае необходимости создание директории с файлами бэкапа.
+    """
+    if not os.path.exists(USER_RESOURCES_PATH):
+        os.mkdir(USER_RESOURCES_PATH)
 
 
 class Adrenaline_bot:
@@ -183,6 +190,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         if os.path.exists(CLIENTS_PICKLE_PATH):
             with open(CLIENTS_PICKLE_PATH, 'rb') as clients_list:
                 self.clients = pickle.load(clients_list)
@@ -196,6 +204,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         if os.path.exists(ADMINS_PICKLE_PATH):
             with open(ADMINS_PICKLE_PATH, 'rb') as admins_list:
                 self.admins = pickle.load(admins_list)

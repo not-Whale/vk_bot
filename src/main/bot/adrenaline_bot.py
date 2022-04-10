@@ -168,6 +168,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         with open(CLIENTS_PICKLE_PATH, 'wb') as clients_list:
             pickle.dump(self.clients, clients_list)
         clients_list.close()
@@ -178,6 +179,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         with open(ADMINS_PICKLE_PATH, 'wb') as admins_list:
             pickle.dump(self.admins, admins_list)
         admins_list.close()

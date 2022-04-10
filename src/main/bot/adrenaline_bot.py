@@ -881,6 +881,16 @@ class Adrenaline_bot:
                 ADMIN_NEED_HELP_KEYBOARD
             )
 
+    def add_new_admins(self, admins_list):
+        """
+        Добавление админов в список.
+
+        :param admins_list: массив объектов админов
+        :return:
+        """
+        for admin_obj in admins_list:
+            self.add_new_admin(admin_obj)
+
     def add_new_admin(self, admin_obj):
         """
         Добавление админа в список.

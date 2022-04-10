@@ -263,6 +263,14 @@ Adrenaline_bot (основной класс)
         :param admin_obj: объект админа
         :type admin_obj: src.main.user.admin.Admin
 
+    .. py:method:: self.add_new_admins(self, admins_list)
+
+        Добавление админов в список.
+        Меняет значение поля *admins*.
+
+        :param admins_list: массив объектов админов
+        :type admins_list: src.main.user.admin.Admin[]
+
     .. py:method:: self.start_bot(self)
 
         Инициализация и запуск бота.

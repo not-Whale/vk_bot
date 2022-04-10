@@ -296,7 +296,7 @@ class Adrenaline_bot:
 
     def get_response(self):
         """
-        Отправка get-запроса к LongPoll-серверу и получение ответа
+        Отправка get-запроса к LongPoll-серверу и получение ответа.
 
         :return: ответ LongPoll-сервера
         """
@@ -306,7 +306,6 @@ class Adrenaline_bot:
             ts=self.long_poll_ts)).json()
         return data
 
-    # заполнение списка id админов
     def fill_admin_list(self):
         """
         Заполнение списка id админов в случае перезапуска бота.
@@ -862,7 +861,6 @@ class Adrenaline_bot:
                 CLIENT_PAYMENT_METHOD_KEYBOARD
             )
 
-    # отправка админам сообщения, что поступил заказ и их ожидают
     def note_admins_about_new_delay(self, current_user):
         """
         Оповещение админов об ожидании обработки нового заказа.
@@ -892,8 +890,12 @@ class Adrenaline_bot:
         :param admin_obj: объект админа
         :return:
         """
-        self.admins.append(admin_obj)
-        self.save_admins()
+        for i in range(len(self.admins)):
+            if admin_obj == self.admins[i]:
+                break
+        else:
+            self.admins.append(admin_obj)
+            self.save_admins()
 
     def start_bot(self):
         """

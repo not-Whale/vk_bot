@@ -31,7 +31,6 @@ def handle_admin_delivery_and_get_energy_amount(current_user, text):
     return str(energy_amount)
 
 
-# обработка заключения новой сделки админом
 def handle_admin_new_deal_and_get_energy_amount(current_user, text, time):
     """
     Выделение количества энергетиков после сделки.
@@ -55,6 +54,14 @@ def handle_admin_new_deal_and_get_energy_amount(current_user, text, time):
     if sold > 0:
         current_user.new_deal([sold, time])
     return str(new_energy_amount)
+
+
+def check_and_create_backup_directory():
+    """
+    Проверка на наличие и в случае необходимости создание директории с файлами бэкапа.
+    """
+    if not os.path.exists(USER_RESOURCES_PATH):
+        os.mkdir(USER_RESOURCES_PATH)
 
 
 class Adrenaline_bot:
@@ -161,6 +168,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         with open(CLIENTS_PICKLE_PATH, 'wb') as clients_list:
             pickle.dump(self.clients, clients_list)
         clients_list.close()
@@ -171,6 +179,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         with open(ADMINS_PICKLE_PATH, 'wb') as admins_list:
             pickle.dump(self.admins, admins_list)
         admins_list.close()
@@ -183,6 +192,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         if os.path.exists(CLIENTS_PICKLE_PATH):
             with open(CLIENTS_PICKLE_PATH, 'rb') as clients_list:
                 self.clients = pickle.load(clients_list)
@@ -196,6 +206,7 @@ class Adrenaline_bot:
 
         :return:
         """
+        check_and_create_backup_directory()
         if os.path.exists(ADMINS_PICKLE_PATH):
             with open(ADMINS_PICKLE_PATH, 'rb') as admins_list:
                 self.admins = pickle.load(admins_list)
@@ -285,7 +296,7 @@ class Adrenaline_bot:
 
     def get_response(self):
         """
-        Отправка get-запроса к LongPoll-серверу и получение ответа
+        Отправка get-запроса к LongPoll-серверу и получение ответа.
 
         :return: ответ LongPoll-сервера
         """
@@ -295,7 +306,6 @@ class Adrenaline_bot:
             ts=self.long_poll_ts)).json()
         return data
 
-    # заполнение списка id админов
     def fill_admin_list(self):
         """
         Заполнение списка id админов в случае перезапуска бота.
@@ -851,7 +861,6 @@ class Adrenaline_bot:
                 CLIENT_PAYMENT_METHOD_KEYBOARD
             )
 
-    # отправка админам сообщения, что поступил заказ и их ожидают
     def note_admins_about_new_delay(self, current_user):
         """
         Оповещение админов об ожидании обработки нового заказа.
@@ -872,6 +881,16 @@ class Adrenaline_bot:
                 ADMIN_NEED_HELP_KEYBOARD
             )
 
+    def add_new_admins(self, admins_list):
+        """
+        Добавление админов в список.
+
+        :param admins_list: массив объектов админов
+        :return:
+        """
+        for admin_obj in admins_list:
+            self.add_new_admin(admin_obj)
+
     def add_new_admin(self, admin_obj):
         """
         Добавление админа в список.
@@ -881,8 +900,12 @@ class Adrenaline_bot:
         :param admin_obj: объект админа
         :return:
         """
-        self.admins.append(admin_obj)
-        self.save_admins()
+        for i in range(len(self.admins)):
+            if admin_obj == self.admins[i]:
+                break
+        else:
+            self.admins.append(admin_obj)
+            self.save_admins()
 
     def start_bot(self):
         """

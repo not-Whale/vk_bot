@@ -263,6 +263,14 @@ Adrenaline_bot (основной класс)
         :param admin_obj: объект админа
         :type admin_obj: src.main.user.admin.Admin
 
+    .. py:method:: self.add_new_admins(self, admins_list)
+
+        Добавление админов в список.
+        Меняет значение поля *admins*.
+
+        :param admins_list: массив объектов админов
+        :type admins_list: src.main.user.admin.Admin[]
+
     .. py:method:: self.start_bot(self)
 
         Инициализация и запуск бота.
@@ -298,6 +306,11 @@ Adrenaline_bot (основной класс)
     :type time: datetime
     :raise src.main.bot.errors.AmountError: в случае если число введено некорректно
     :return: количество энергетиков после совершения сделки
+
+
+.. py:function:: check_and_create_backup_directory():
+
+    Проверка на наличие и в случае необходимости создание директории с файлами бэкапа.
 
 
 Вспомогательные функции

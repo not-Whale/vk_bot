@@ -52,7 +52,6 @@ def init_parser():
 
 if __name__ == '__main__':
     args_parser = init_parser()
-    args_parser.print_help()
-    # args = args_parser.parse_args(sys.argv[1:])
-    # bot = Adrenaline_bot()
-    # bot.start_bot()
+    args = args_parser.parse_args(sys.argv[1:])
+    bot = Adrenaline_bot(args.logging)
+    bot.start_bot()

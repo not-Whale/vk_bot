@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 
 def read_json_keyboard_file(file_name):
@@ -34,3 +35,7 @@ def print_error(error_message):
     print('\033[31mError! Message:')
     print(error_message)
     print('\033[0m')
+
+
+def print_log(log_message):
+    print('\033[32m' + datetime.today().strftime('%Y-%m-%d %H:%M:%S') + ' - \033[0m' + log_message)

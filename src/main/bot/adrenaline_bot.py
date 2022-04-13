@@ -8,7 +8,7 @@ from src.main.bot.constants import *
 from src.main.bot.conf import *
 from src.main.user.client import Client
 from src.main.errors.amount_error import AmountError
-from src.main.bot.utility_funcs import format_input, print_error
+from src.main.bot.utility_funcs import format_input, print_error, print_log
 
 
 def handle_admin_delivery_and_get_energy_amount(current_user, text):
@@ -66,7 +66,7 @@ def check_and_create_backup_directory():
 
 class Adrenaline_bot:
     """Бот для обработки сообщений в личных сообщениях сообщества или страницы вк."""
-    def __init__(self):
+    def __init__(self, logging):
         # объект сессии авторизации
         self.vk_session = None
         # настройки LongPoll
@@ -76,6 +76,8 @@ class Adrenaline_bot:
         # для авторизации через пользователя
         self.auth_code = None
         self.remember_code = None
+        # логирование
+        self.logging = logging
         # администраторы и клиенты
         self.admins = []
         self.clients = []
@@ -118,8 +120,11 @@ class Adrenaline_bot:
         )
         try:
             self.vk_session.auth()
-            print('Авторизация пользователя успешна!')
+            if self.logging:
+                print_log('login_as_user - Авторизация пользователя успешна!')
         except vk_api.TwoFactorError:
+            if self.logging:
+                print_log('login_as_user - Авторизация не удалась! Переход к двухфакторной аутентификации...')
             self.login_as_user_two_factor()
         except vk_api.AuthError as error_message:
             print_error(error_message)
@@ -139,7 +144,8 @@ class Adrenaline_bot:
         )
         try:
             self.vk_session.auth()
-            print('Двухфакторная аутентификация пользователя прошла успешно!')
+            if self.logging:
+                print_log('login_as_user_two_factor - Двухфакторная аутентификация пользователя прошла успешно!')
         except vk_api.AuthError as error_message:
             print_error(error_message)
             self.vk_session = None
@@ -154,7 +160,8 @@ class Adrenaline_bot:
         """
         try:
             self.vk_session = vk_api.VkApi(token=VK_TOKEN)
-            print('Авторизация сообщества успешна!')
+            if self.logging:
+                print_log('login_as_group - Авторизация сообщества успешна!')
         except vk_api.ApiError as error_message:
             print_error(error_message)
             self.vk_session = None
@@ -171,6 +178,8 @@ class Adrenaline_bot:
         check_and_create_backup_directory()
         with open(CLIENTS_PICKLE_PATH, 'wb') as clients_list:
             pickle.dump(self.clients, clients_list)
+            if self.logging:
+                print_log('save_clients - Список клиентов сохранен!')
         clients_list.close()
 
     def save_admins(self):
@@ -182,6 +191,8 @@ class Adrenaline_bot:
         check_and_create_backup_directory()
         with open(ADMINS_PICKLE_PATH, 'wb') as admins_list:
             pickle.dump(self.admins, admins_list)
+            if self.logging:
+                print_log('save_admins - Список админов сохранен!')
         admins_list.close()
 
     def load_clients(self):
@@ -196,6 +207,8 @@ class Adrenaline_bot:
         if os.path.exists(CLIENTS_PICKLE_PATH):
             with open(CLIENTS_PICKLE_PATH, 'rb') as clients_list:
                 self.clients = pickle.load(clients_list)
+                if self.logging:
+                    print_log('load_clients - Список клиентов загружен!')
             clients_list.close()
 
     def load_admins(self):
@@ -210,6 +223,8 @@ class Adrenaline_bot:
         if os.path.exists(ADMINS_PICKLE_PATH):
             with open(ADMINS_PICKLE_PATH, 'rb') as admins_list:
                 self.admins = pickle.load(admins_list)
+                if self.logging:
+                    print_log('load_admins - Список админов загружен!')
             admins_list.close()
 
     def set_clients_actual_keyboard(self):
@@ -293,6 +308,8 @@ class Adrenaline_bot:
         self.long_poll_server = long_poll['server']
         self.long_poll_key = long_poll['key']
         self.long_poll_ts = long_poll['ts']
+        if self.logging:
+            print_log('set_long_poll_server_params - LongPoll-сервер инициализирован!')
 
     def get_response(self):
         """
@@ -387,7 +404,7 @@ class Adrenaline_bot:
         current_user = self.define_admin_from_message(user_id)
         if current_user is None:
             print_error('Админа не найдено в списке!')
-            exit(1)
+            exit(2)
         if current_user.get_menu_mode() == 'start':
             if text == 'Начать':
                 current_user.set_menu_mode('main')
@@ -409,12 +426,18 @@ class Adrenaline_bot:
                     user_id,
                     'Статус: Online!'
                 )
+                first_name, second_name = self.get_username(current_user.get_user_id())
+                if self.logging:
+                    print_log(first_name + ' ' + second_name + ' онлайн!')
             elif text == 'Занят':
                 current_user.set_offline()
                 self.send_message(
                     user_id,
                     'Статус: Offline!'
                 )
+                first_name, second_name = self.get_username(current_user.get_user_id())
+                if self.logging:
+                    print_log(first_name + ' ' + second_name + ' офлайн!')
             elif text == 'Мои продажи':
                 self.send_message(
                     user_id,
@@ -600,12 +623,11 @@ class Adrenaline_bot:
                 )
                 self.note_new_client_action(current_user)
             elif text == 'Хочу сотрудничать':
-                link = self.vk_session.method('users.get', values={'user_ids': f'{LOPATA_ID}'})[0]['id']
                 self.send_message(
                     user_id,
                     'Если Вы хотите обсудить возможность сотрудничества, '
                     'получения скидки или просто поговорить с Лопатусом), '
-                    f'пишите [id{link}|сюда]!'
+                    f'пишите [id{LOPATA_ID}|сюда]!'
                 )
             else:
                 self.send_message(
@@ -644,7 +666,7 @@ class Adrenaline_bot:
             else:
                 self.send_message(
                     user_id,
-                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING) - 1)]
                 )
         elif current_user.get_menu_mode() == 'big_order':
             try:
@@ -729,7 +751,7 @@ class Adrenaline_bot:
             else:
                 self.send_message(
                     user_id,
-                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING) - 1)]
                 )
         elif current_user.get_menu_mode() == 'admin_delay':
             if text == 'Мне помогли':
@@ -751,7 +773,7 @@ class Adrenaline_bot:
             else:
                 self.send_message(
                     user_id,
-                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING) - 1)]
                 )
         elif current_user.get_menu_mode() == 'payment_check':
             if text == 'Оплата произведена':
@@ -768,13 +790,18 @@ class Adrenaline_bot:
             else:
                 self.send_message(
                     user_id,
-                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING) - 1)]
                 )
         elif current_user.get_menu_mode() == 'order_done':
             self.note_new_client_action(current_user, current_user.get_current_order().get_admin())
             if text == 'Я получил заказ':
                 current_user.set_menu_mode('main')
                 current_user.new_deal(current_user.get_current_order().get_energy_amount())
+                if self.logging:
+                    print_log(
+                        'Сделка завершена:' +
+                        current_user.get_current_order().get_energy_amount() + 'куплено!'
+                    )
                 current_user.get_current_order().clear_order()
                 self.save_clients()
                 self.send_message(
@@ -787,7 +814,7 @@ class Adrenaline_bot:
             else:
                 self.send_message(
                     user_id,
-                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING))]
+                    MISUNDERSTANDING[randint(0, len(MISUNDERSTANDING) - 1)]
                 )
 
     def client_order_done(self, current_user):
@@ -827,7 +854,7 @@ class Adrenaline_bot:
 
     def find_free_admin_and_continue(self, current_user):
         """
-        Проверка на наличие свободных админов и оповещение клиента о дальнейших дейсвтиях.
+        Проверка на наличие свободных админов и оповещение клиента о дальнейших действиях.
 
         Метод совершает поиск свободного админа. В случае положительного результата,
         клиенту отправляется инструкция о дальнейших действиях (куда подойти и забрать
@@ -880,6 +907,8 @@ class Adrenaline_bot:
                 f'Ответь ему, как только появится время!!!',
                 ADMIN_NEED_HELP_KEYBOARD
             )
+        if self.logging:
+            print_log('Админы оповещены об ожидающем покупателе!')
 
     def add_new_admins(self, admins_list):
         """
@@ -905,6 +934,8 @@ class Adrenaline_bot:
                 break
         else:
             self.admins.append(admin_obj)
+            if self.logging:
+                print_log('add_new_admin - Админ добавлен в список!')
             self.save_admins()
 
     def start_bot(self):
@@ -917,7 +948,7 @@ class Adrenaline_bot:
         self.login_as_group()
         if self.vk_session is None:
             print_error('VK session is Null!')
-            exit(1)
+            exit(2)
 
         # установка параметров LongPoll сервера
         self.set_long_poll_server_params()
@@ -937,10 +968,10 @@ class Adrenaline_bot:
                 for update in updates:
                     action_code = update[0]
                     # набор текста пользователем
-                    if action_code == 61:
+                    if action_code == 61 and self.logging:
                         user_id = update[1]
                         first_name, second_name = self.get_username(user_id)
-                        print(first_name + ' ' + second_name + ' печатает...')
+                        print_log(first_name + ' ' + second_name + ' печатает...')
                     # новое сообщение в диалоге
                     elif action_code == 4:
                         user_id = update[3]
@@ -952,10 +983,25 @@ class Adrenaline_bot:
                         # если сообщение от пользователя
                         if not flags & 2:
                             self.new_message(user_id, first_name, time, text)
-                            if text:
-                                print(first_name + ' ' + second_name + ': "' + text + '" [' + t.ctime(time) + ']')
-                            # обработка вложений (прикреплять больше 10 запрещено самим вк)
-                            for i in range(1, 11):
-                                if 'attach' + str(i) + '_type' in media.keys():
-                                    print('    ' + media['attach' + str(i) + '_type'] + ': ' + media['attach' + str(i)])
+                            if self.logging:
+                                if text:
+                                    print_log(
+                                        first_name +
+                                        ' ' +
+                                        second_name +
+                                        ': "' +
+                                        text +
+                                        '" [' +
+                                        t.ctime(time) +
+                                        ']'
+                                    )
+                                # обработка вложений (прикреплять больше 10 запрещено самим вк)
+                                for i in range(1, 11):
+                                    if 'attach' + str(i) + '_type' in media.keys():
+                                        print_log(
+                                            '    ' +
+                                            media['attach' + str(i) + '_type'] +
+                                            ': ' +
+                                            media['attach' + str(i)]
+                                        )
             self.long_poll_ts = response['ts']

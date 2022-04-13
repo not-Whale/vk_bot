@@ -66,7 +66,7 @@ def check_and_create_backup_directory():
 
 class Adrenaline_bot:
     """Бот для обработки сообщений в личных сообщениях сообщества или страницы вк."""
-    def __init__(self, logging):
+    def __init__(self, logging, clean_start, first_start):
         # объект сессии авторизации
         self.vk_session = None
         # настройки LongPoll
@@ -81,9 +81,16 @@ class Adrenaline_bot:
         # администраторы и клиенты
         self.admins = []
         self.clients = []
-        # загрузка, если есть, базы пользователей
-        self.load_clients()
-        self.load_admins()
+        # загрузка базы пользователей
+        if first_start:
+            self.delete_clients()
+            self.delete_admins()
+        elif clean_start:
+            self.delete_admins()
+            self.load_clients()
+        else:
+            self.load_admins()
+            self.load_clients()
 
     def auth_handler(self):
         """
@@ -226,6 +233,18 @@ class Adrenaline_bot:
                 if self.logging:
                     print_log('load_admins - Список админов загружен!')
             admins_list.close()
+
+    def delete_clients(self):
+        if os.path.exists(CLIENTS_PICKLE_PATH):
+            os.remove(CLIENTS_PICKLE_PATH)
+        self.clients.clear()
+        print_log('delete_clients - Список клиентов очищен!')
+
+    def delete_admins(self):
+        if os.path.exists(ADMINS_PICKLE_PATH):
+            os.remove(ADMINS_PICKLE_PATH)
+        self.admins.clear()
+        print_log('delete_admins - Список админов очищен!')
 
     def set_clients_actual_keyboard(self):
         """
@@ -910,6 +929,9 @@ class Adrenaline_bot:
         if self.logging:
             print_log('Админы оповещены об ожидающем покупателе!')
 
+    def add_admins_from_file(self, path):
+        pass
+
     def add_new_admins(self, admins_list):
         """
         Добавление админов в список.
@@ -938,14 +960,18 @@ class Adrenaline_bot:
                 print_log('add_new_admin - Админ добавлен в список!')
             self.save_admins()
 
-    def start_bot(self):
+    def start_bot(self, auth_type, admins_list_path):
         """
         Инициализация и запуск бота.
 
         :return:
         """
         # авторизация сообщества
-        self.login_as_group()
+        if auth_type == 'community':
+            self.login_as_group()
+        else:
+            self.login_as_user()
+
         if self.vk_session is None:
             print_error('VK session is Null!')
             exit(2)
@@ -954,6 +980,8 @@ class Adrenaline_bot:
         self.set_long_poll_server_params()
 
         # заполнения списка админов
+        if admins_list_path is not None:
+            self.add_admins_from_file(admins_list_path)
         self.fill_admin_list()
 
         # загрузка актуальных клавиатур
@@ -961,6 +989,9 @@ class Adrenaline_bot:
         self.set_clients_actual_keyboard()
 
         # цикл запросов к LongPoll серверу
+        self.long_poll_loop()
+
+    def long_poll_loop(self):
         while True:
             response = self.get_response()
             updates = response['updates']

@@ -1,7 +1,7 @@
 import json
 
 
-def read_json(file_name):
+def read_json_keyboard_file(file_name):
     """
     Чтение json-клавиатуры из файла.
 

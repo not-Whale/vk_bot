@@ -1,4 +1,4 @@
-from src.main.bot.utility_funcs import read_json
+from src.main.bot.utility_funcs import read_json_keyboard_file
 
 MAX_INT = 2147483647
 ONE_ENERGY_DRINK_PRICE = 65
@@ -11,17 +11,17 @@ USER_RESOURCES_PATH = '../resources/users'
 CLIENTS_PICKLE_PATH = '../resources/users/clients.pickle'
 ADMINS_PICKLE_PATH = '../resources/users/admins.pickle'
 
-ADMIN_MAIN_MENU_KEYBOARD = read_json('admin_main_keyboard')
-ADMIN_NEED_HELP_KEYBOARD = read_json('admin_need_help_keyboard')
+ADMIN_MAIN_MENU_KEYBOARD = read_json_keyboard_file('admin_main_keyboard')
+ADMIN_NEED_HELP_KEYBOARD = read_json_keyboard_file('admin_need_help_keyboard')
 
-CLIENT_MAIN_MENU_KEYBOARD = read_json('client_main_keyboard')
-CLIENT_CART_KEYBOARD = read_json('client_cart_keyboard')
-CLIENT_DELAY_KEYBOARD = read_json('client_delay_keyboard')
-CLIENT_ORDER_DONE_KEYBOARD = read_json('client_order_done_keyboard')
-CLIENT_PAYMENT_CHECK_KEYBOARD = read_json('client_payment_check_keyboard')
-CLIENT_PAYMENT_METHOD_KEYBOARD = read_json('client_payment_method_keyboard')
+CLIENT_MAIN_MENU_KEYBOARD = read_json_keyboard_file('client_main_keyboard')
+CLIENT_CART_KEYBOARD = read_json_keyboard_file('client_cart_keyboard')
+CLIENT_DELAY_KEYBOARD = read_json_keyboard_file('client_delay_keyboard')
+CLIENT_ORDER_DONE_KEYBOARD = read_json_keyboard_file('client_order_done_keyboard')
+CLIENT_PAYMENT_CHECK_KEYBOARD = read_json_keyboard_file('client_payment_check_keyboard')
+CLIENT_PAYMENT_METHOD_KEYBOARD = read_json_keyboard_file('client_payment_method_keyboard')
 
-GO_BACK_KEYBOARD = read_json('go_back_keyboard')
+GO_BACK_KEYBOARD = read_json_keyboard_file('go_back_keyboard')
 
 ADMIN_LIST = []
 

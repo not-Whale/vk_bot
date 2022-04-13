@@ -5,9 +5,9 @@ import requests
 import time as t
 from random import randint
 from src.main.bot.constants import *
-from src.main.bot.open_keys import *
+from src.main.bot.conf import *
 from src.main.user.client import Client
-from src.main.bot.errors import AmountError
+from src.main.errors.amount_error import AmountError
 from src.main.bot.utility_funcs import format_input, print_error
 
 
